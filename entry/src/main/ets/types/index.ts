@@ -18,3 +18,9 @@ export enum FocusSelectType {
     NEGATIVE_COUNT = 3,
     POMODORO = 4,
 }
+
+export type TimeConfigType = {
+    id: number,
+    time: number,
+    str: string
+}
