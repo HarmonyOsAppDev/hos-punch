@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximu-scale=1.0,user-scalable=no" />
+    <title>翻页时钟 | Flip Clock</title>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            html {
+                background: black;
+            }
+
+            body {
+                filter: invert(1) hue-rotate(180deg);
+            }
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        button {
+            background: white;
+            border: 2px solid black;
+            height: 50px;
+            font-weight: bold;
+        }
+        .language-toggle {
+            margin-bottom: 20px;
+        }
+        .language-toggle button {
+            cursor: pointer;
+            padding: 10px;
+            margin-right: 5px;
+        }
+        .content {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="language-toggle">
+    <button id="showEnglish">English</button>
+    <button id="showChinese">中文</button>
+</div>
+
+<div id="englishContent" class="content">
+    <h1>Flip Clock Privacy Policy</h1>
+    <section>
+        <h2>Introduction</h2>
+        <p>Welcome to Flip Clock! We value your privacy and data protection. This Privacy Policy is intended to transparently explain how we handle information related to your use of the Flip Clock app.</p>
+    </section>
+    <section>
+        <h2>Privacy Policy</h2>
+        <p>This app does not require internet access, and does not collect, store, or share any personal information of its users.</p>
+    </section>
+    <section>
+        <h2>Collection and Use of Personal Information</h2>
+        <p>Since Flip Clock does not require internet connectivity, we do not collect any personal information from our users. All data remains on your local device and is not sent or shared with us or any third parties.</p>
+    </section>
+    <section>
+        <h2>Data Security</h2>
+        <p>We understand the importance of protecting user information. Although our app does not collect any personal information, we still take all possible measures to ensure the security of the app and confidentiality of user data.</p>
+    </section>
+    <section>
+        <h2>Children’s Privacy</h2>
+        <p>Given that we do not collect any personal information, our app is suitable for users of all ages.</p>
+    </section>
+    <section>
+        <h2>Changes to Our Privacy Policy</h2>
+        <p>We reserve the right to update or modify this Privacy Policy at any time. Any changes will be published in the updated version of the app.</p>
+    </section>
+    <section>
+        <h2>Contact Us</h2>
+        <p>If you have any questions about this Privacy Policy, please contact me: WU JIANFENG hello@isjeff.com</p>
+    </section>
+</div>
+
+<div id="chineseContent" class="content">
+    <h1>翻页时钟（Flip Clock）隐私政策</h1>
+    <h2>引言</h2>
+    <p>欢迎使用翻页时钟（Flip Clock）！我们重视用户的隐私和数据保护。本隐私政策旨在透明地说明我们如何处理与您使用翻页时钟（Flip Clock）应用相关的信息。</p>
+
+    <h2>隐私政策</h2>
+    <p>本应用不需要联网，不收集、存储或分享用户的任何个人信息。</p>
+
+    <h2>个人信息的收集与使用</h2>
+    <p>由于翻页时钟（Flip Clock）不需要联网功能，因此我们不收集用户的任何个人信息。使用本应用时，您的所有数据均保存在本地设备上，不会被发送或共享给我们或第三方。</p>
+
+    <h2>数据安全</h2>
+    <p>我们深知保护用户信息的重要性，虽然本应用不收集任何个人信息，但我们依然采取了一切可能的措施，以确保应用的安全性和用户数据的保密性。</p>
+
+    <h2>儿童隐私</h2>
+    <p>鉴于我们不收集任何个人信息，因此本应用适合所有年龄段的用户使用。</p>
+
+    <h2>隐私政策的变更</h2>
+    <p>我们保留随时更新或修改本隐私政策的权利。任何变更将在本应用的更新版本中公布。</p>
+
+    <h2>联系我们</h2>
+    <p>如果您对本隐私政策有任何疑问，请联系：吴健锋 hello@isjeff.com </p>
+</div>
+
+<script>
+    function showContent(language) {
+        const englishContent = document.getElementById('englishContent');
+        const chineseContent = document.getElementById('chineseContent');
+        const engBtn = document.getElementById('showEnglish');
+        const cnBtn = document.getElementById('showChinese');
+        if (language === 'english') {
+            englishContent.style.display = 'block';
+            chineseContent.style.display = 'none';
+
+            cnBtn.style.background = "white";
+            cnBtn.style.color = "black";
+            engBtn.style.background = "black";
+            engBtn.style.color = "white";
+        } else if (language === 'chinese') {
+            englishContent.style.display = 'none';
+            chineseContent.style.display = 'block';
+
+            cnBtn.style.background = "black";
+            cnBtn.style.color = "white";
+            engBtn.style.background = "white";
+            engBtn.style.color = "black";
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const userLang = navigator.language || navigator.userLanguage; 
+        // Detect user's system language
+        if (userLang.startsWith('zh-CN')) {
+            // If user's system language is Simplified Chinese
+            showContent('chinese');
+        } else {
+            // For all other languages, default to English
+            showContent('english');
+        }
+    });
+
+    document.getElementById('showEnglish').addEventListener('click', function() {
+        showContent('english');
+    });
+
+    document.getElementById('showChinese').addEventListener('click', function() {
+        showContent('chinese');
+    });
+
+    // Default to English
+    showContent('chinese');
+</script>
+
+</body>
+</html>

@@ -1,4 +1,4 @@
-
+import router from '@ohos.router'
 
 @Entry
 @Component
@@ -24,8 +24,8 @@ export struct SettingPage {
 
       Row() {
         Row() {
-          Text("选项一 ").fontSize(16)
-          Text("(选项1小备注)").fontSize(12)
+          Text("每日打卡提醒 ").fontSize(16)
+          Text("(统一推送一次)").fontSize(12)
         }.alignItems(VerticalAlign.Center)
 
         Row() {
@@ -41,8 +41,7 @@ export struct SettingPage {
 
       Row() {
         Row() {
-          Text("选项二 ").fontSize(16)
-          Text("(选项2小备注)").fontSize(12)
+          Text("打卡完成声音 ").fontSize(16)
         }.alignItems(VerticalAlign.Center)
 
         Row() {
@@ -58,19 +57,35 @@ export struct SettingPage {
 
       Row() {
         Row() {
-          Text("选项三 ").fontSize(16)
-          Text("(选项3小备注)").fontSize(12)
+          Text("隐私政策 ").fontSize(16)
         }.alignItems(VerticalAlign.Center)
 
         Row() {
-          Toggle({ type: ToggleType.Switch, isOn: false })
-            .selectedColor('#ff7f00')
-            .switchPointColor('#FFFFFF')
-            .onChange((isOn: boolean) => {
-              // this.isTop = isOn;
-            })
+          Column() {
+            Image($r('app.media.right_circle_arrow')).width(25).height(25)
+          }
         }
-      }.justifyContent(FlexAlign.SpaceBetween).padding({ bottom: 10, left: 15, right: 15, top: 10 }).width("90%").backgroundColor("#f6f8fa").borderRadius(15).margin({top: 20})
+      }.justifyContent(FlexAlign.SpaceBetween).padding({ bottom: 10, left: 15, right: 15, top: 10 }).width("90%").backgroundColor("#f6f8fa").borderRadius(15).margin({top: 20}).onClick(() => {
+        router.pushUrl({
+          url: "pages/Privacy"
+        })
+      })
+
+      Row() {
+        Row() {
+          Text("建议反馈 ").fontSize(16)
+        }.alignItems(VerticalAlign.Center)
+
+        Row() {
+          Column() {
+            Image($r('app.media.right_circle_arrow')).width(25).height(25)
+          }
+        }
+      }.justifyContent(FlexAlign.SpaceBetween).padding({ bottom: 10, left: 15, right: 15, top: 10 }).width("90%").backgroundColor("#f6f8fa").borderRadius(15).margin({top: 20}).onClick(() => {
+        router.pushUrl({
+          url: "pages/Privacy"
+        })
+      })
 
 
 

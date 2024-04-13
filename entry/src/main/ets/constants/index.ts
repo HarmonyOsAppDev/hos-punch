@@ -13,13 +13,18 @@ export const tabList: TargetTabType[] = [
   {str: "全部", id: 2}
 ]
 
+export const cycleList: TargetTabType[] = [
+  {str: "按周选择", id: 0},
+  {str: "按月选择", id: 1},
+]
+
 export const activeConfig = {
   normal: "#8a8a8a",
   active: "#2c2c2c"
 }
 
 export const bottomTabs:  string[] = [
- "记录",
+ " 记录 ",
  "正计时",
  "倒计时",
  "番茄钟",
@@ -62,3 +67,17 @@ export const timeConfig = [
     str: "2小时"
   },
 ]
+
+export const weekDayMap = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+
+
+export const weekKeyMap = {
+  "1": "一",
+  "2": "二",
+  "3": "三",
+  "4": "四",
+  "5": "五",
+  "6": "六",
+  "7": "日",
+}
+

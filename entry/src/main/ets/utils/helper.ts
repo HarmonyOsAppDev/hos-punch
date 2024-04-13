@@ -1,3 +1,4 @@
+import { weekKeyMap } from '../constants';
 import { SelectDateType } from '../types';
 
 export function getDaysOfMonthWithFirstDayOfWeek({year, month}: SelectDateType ) {
@@ -48,3 +49,68 @@ function getDaysInMonth(year, month) {
     30, 31
   ][month];
 }
+
+export function getYMD(time?: number) {
+  const now = time ? time : new Date().getTime();
+  const r =  {
+    year: new Date(now).getFullYear(),
+    month: new Date(now).getMonth() + 1,
+    day: new Date(now).getDate(),
+  };
+
+  return {
+    year_month_day: r,
+    dateStr: `${r.year}-${r.month}-${r.day}`,
+  }
+}
+
+
+export function getEndTimeInit(startTime?: number) {
+    let now = startTime ? startTime : new Date().getTime();
+    now += 30 * 24 * 60 * 60 * 1000; // 时间加一个月
+    const r =  {
+      year: new Date(now).getFullYear(),
+      month: new Date(now).getMonth() + 1,
+      day: new Date(now).getDate(),
+    };
+    return {
+      originFormat: new Date(now),
+      dateStr:`${r.year}-${r.month}-${r.day}`
+    }
+}
+
+export const weekDayChangeStr = (numArr: number[]) => {
+  if (numArr.length > 0) {
+    let str = `周`;
+    numArr.map((item, index) => {
+      str += `${weekKeyMap[String(item)]}${index !== numArr.length - 1 ? ',' : ''}`;
+    });
+    return str;
+  } else {
+    return `没有选择周期`
+  }
+}
+
+export const monthChangeStr = (numArr: number[]) => {
+  if (numArr.length > 0) {
+    let str = ``;
+    let tmpArr = numArr;
+    if (numArr.length > 9) {
+      tmpArr = tmpArr.slice(0, 9);
+      tmpArr.map((item, index) => {
+        str += `${item}${index !== tmpArr.length - 1 ? ',' : '...'}`;
+      });
+    } else {
+      tmpArr.map((item, index) => {
+        str += `${item}${index !== tmpArr.length - 1 ? ',' : ''}`;
+      });
+    }
+
+    return str;
+  } else {
+    return `没有选择周期`
+  }
+}
+
+
+

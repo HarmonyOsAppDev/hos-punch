@@ -1,10 +1,389 @@
+import router from '@ohos.router'
+import { TypeDialogManager } from '../components/Dialog';
+import { activeConfig } from '../constants';
+import { Icon_list } from '../statics';
+import { CycleType, IconItemType, NewTaskType, PeriodType, TargetCycleSelectType } from '../types';
+import { getEndTimeInit, getYMD, monthChangeStr, weekDayChangeStr } from '../utils/helper';
 
-
+@Entry
 @Component
 export struct AddTarget {
+  @State formData: NewTaskType = {
+    id: 0,
+    title: "默认打卡主题",
+    icon: Icon_list[0].url,
+    period: PeriodType.DAY,
+    cycle: [1, 2, 3, 4, 5, 6, 7],
+    cycleType: CycleType.WEEK,
+    punch_count: 1,
+    allow_surpass: false,
+    allow_popcard:  false,
+    start_time: new Date().getTime(),
+    end_time: undefined,
+  }
+
+  @State currentEditKey: keyof NewTaskType = "title" ;
+  @State needEndTime: boolean = false;
+  private scroller: Scroller = new Scroller()
+  private selectedDate: Date = new Date();
+  private DialogInstance: CustomDialogController | undefined = undefined;
+
+  onPageShow() {
+    if (router.getParams()) {
+      const params = router.getParams() as TargetCycleSelectType;
+      if (params) {
+        this.formData.cycle = params.currentSelectCycles;
+        this.formData.cycleType = params.currentSelectCycleType;
+      }
+    }
+  }
+
+
+  createTypeDialog(oldVal: string | number, title: string, key: keyof NewTaskType, inputType?: InputType) {
+    this.currentEditKey = key;
+    this.DialogInstance = new CustomDialogController({
+      builder: TypeDialogManager({
+        cancel: this.closeDialog.bind(this),
+        confirm: this.dialogonAccept.bind(this),
+        title,
+        oldVal,
+        inputType
+      }),
+      alignment: DialogAlignment.Center
+    });
+
+    this.DialogInstance.open();
+  }
+
+  closeDialog() {
+    this.DialogInstance?.close();
+  }
+
+  routerBack() {
+    router.back();
+  }
+
+  dialogonAccept(str: string) {
+    this.formData[this.currentEditKey.toString()]= str;
+    this.DialogInstance?.close();
+  }
+
+  goToSelectCyclePage() {
+    router.pushUrl({
+      url: "pages/TargetCycleSelect",
+      params: {
+        currentSelectCycles: this.formData.cycle,
+        currentSelectCycleType: this.formData.cycleType,
+      }
+    })
+  }
+
   build() {
     Column() {
-      Text("AddTarget")
-    }
+      Row() {
+      Column() {
+        Image($r('app.media.back')).width(30).height(30).onClick(() => {
+          this.routerBack();
+        })
+      }
+
+      Row() {
+        Text("新的打卡目标").fontSize(20).fontWeight(500)
+      }
+
+        Text("保存").fontSize(16).fontWeight(400)
+
+    }.justifyContent(FlexAlign.SpaceBetween).width("100%").padding({left: 15, right: 15, top: 5}).margin({bottom: 15})
+
+
+      Scroll(this.scroller) {
+      Column() {
+          Row() {
+            Row() {
+              Text("打卡目标").fontSize(18)
+            }
+
+            Row() {
+              Text(this.formData.title)
+                .fontSize(18)
+                .maxLines(1)
+                .width("66%")
+                .onClick(() => {
+                  this.createTypeDialog(
+                    this.formData.title,
+                    "打卡目标",
+                    "title"
+                  );
+                })
+                .fontColor("#777")
+                .textAlign(TextAlign.End)
+            }
+          }
+          .justifyContent(FlexAlign.SpaceBetween)
+          .padding({ bottom: 20, left: 15, right: 15, top: 20 })
+          .width("95%")
+          .backgroundColor("#f6f8fa")
+          .margin({ left: "2.5%", right: "2.5%" })
+          .borderRadius(30)
+          .margin({ top: 10 })
+
+
+          Row() {
+            Row() {
+              Text("挑选图标").fontSize(18)
+            }
+
+            Row() {
+              Image($r(this.formData.icon)).width(40).height(40)
+            }
+          }
+          .justifyContent(FlexAlign.SpaceBetween)
+          .padding({ bottom: 20, left: 15, right: 15, top: 20 })
+          .width("95%")
+          .backgroundColor("#f6f8fa")
+          .margin({ left: "2.5%", right: "2.5%" })
+          .borderRadius(30)
+          .margin({ top: 10 })
+
+
+          GridRow({
+            columns: 6,
+            breakpoints: {
+              value: ["400vp", "600vp", "800vp"],
+              reference: BreakpointsReference.WindowSize
+            },
+            direction: GridRowDirection.Row
+          }) {
+
+            ForEach(Icon_list, (item: IconItemType) => {
+              GridCol() {
+                Row() {
+                  Image($r(item.url)).width(40).height(40).zIndex(2)
+                  if (this.formData.icon === item.url) {
+                    Column()
+                      .backgroundColor("#ff7f00")
+                      .borderRadius(50)
+                      .width("30%")
+                      .height("10%")
+                      .position({ x: "35%", y: "90%" })
+                      .zIndex(1)
+                  }
+                }
+                .height(60)
+                .justifyContent(FlexAlign.Center)
+                .width("100%")
+                .onClick(() => {
+                  this.formData.icon = item.url;
+                })
+                .key(item.id)
+              }
+            })
+          }
+          .padding({ left: "1%", right: "1%" })
+          .margin({ top: 10 })
+
+
+          Row() {
+            Row() {
+              Text("打卡周期").fontSize(18)
+            }
+
+            Row() {
+              Text(this.formData.cycleType === CycleType.WEEK ? weekDayChangeStr(this.formData.cycle) : monthChangeStr(this.formData.cycle))
+                .fontSize(18)
+                .maxLines(1)
+                .width("66%")
+                .onClick(() => {
+                  this.goToSelectCyclePage();
+                })
+                .fontColor(activeConfig.normal)
+                .textAlign(TextAlign.End)
+                .padding({ right: 8 })
+            }
+          }
+          .justifyContent(FlexAlign.SpaceBetween)
+          .padding({ bottom: 20, left: 15, right: 15, top: 20 })
+          .width("95%")
+          .backgroundColor("#f6f8fa")
+          .margin({ left: "2.5%", right: "2.5%" })
+          .borderRadius(30)
+          .margin({ top: 10 })
+
+
+          Row() {
+            Row() {
+              Text("目标打卡数量").fontSize(18)
+            }
+
+            Row() {
+              Text(String(this.formData.punch_count))
+                .fontSize(18)
+                .maxLines(1)
+                .width("66%")
+                .onClick(() => {
+                  this.createTypeDialog(
+                    this.formData.punch_count,
+                    "目标打卡数量",
+                    "punch_count",
+                    InputType.Number
+                  );
+                })
+                .fontColor(activeConfig.normal)
+                .textAlign(TextAlign.End)
+                .padding({ right: 10 })
+            }
+          }
+          .justifyContent(FlexAlign.SpaceBetween)
+          .padding({ bottom: 20, left: 15, right: 15, top: 20 })
+          .width("95%")
+          .backgroundColor("#f6f8fa")
+          .margin({ left: "2.5%", right: "2.5%" })
+          .borderRadius(30)
+          .margin({ top: 10 })
+
+          Row() {
+            Row() {
+              Text("允许多次打卡 ").fontSize(18)
+            }.alignItems(VerticalAlign.Center)
+
+            Row() {
+              Toggle({ type: ToggleType.Switch, isOn: false })
+                .selectedColor('#ff7f00')
+                .switchPointColor('#FFFFFF')
+                .onChange((isOn: boolean) => {
+                  // this.isTop = isOn;
+                })
+            }
+          }
+          .justifyContent(FlexAlign.SpaceBetween)
+          .padding({ bottom: 20, left: 15, right: 15, top: 20 })
+          .width("95%")
+          .backgroundColor("#f6f8fa")
+          .borderRadius(30)
+          .margin({ top: 10 })
+
+          Row() {
+            Row() {
+              Text("打卡弹出卡片 ").fontSize(18)
+            }.alignItems(VerticalAlign.Center)
+
+            Row() {
+              Toggle({ type: ToggleType.Switch, isOn: false })
+                .selectedColor('#ff7f00')
+                .switchPointColor('#FFFFFF')
+                .onChange((isOn: boolean) => {
+                  // this.isTop = isOn;
+                })
+            }
+          }
+          .justifyContent(FlexAlign.SpaceBetween)
+          .padding({ bottom: 20, left: 15, right: 15, top: 20 })
+          .width("95%")
+          .backgroundColor("#f6f8fa")
+          .borderRadius(30)
+          .margin({ top: 10 })
+
+
+        Row() {
+          Row() {
+            Text("开始日期").fontSize(18)
+          }
+
+          Row() {
+            Text(getYMD(this.formData.start_time).dateStr).fontColor("#328dff").fontSize(16).onClick(() => {
+              DatePickerDialog.show({
+                start: new Date("2000-1-1"),
+                end: new Date("2100-12-31"),
+                lunar: false,
+                selected: this.selectedDate,
+                onAccept: (value: DatePickerResult) => {
+                  // 通过Date的setFullYear方法设置按下确定按钮时的日期，这样当弹窗再次弹出时显示选中的是上一次确定的日期
+                  if (value) {
+                    const year = value.year;
+                    const month =(value?.month || 0) + 1;
+                    const day = value?.day;
+                    this.formData.start_time = new Date(`${year}-${month}-${day}}`).getTime();
+                    // this.dateStartChange();
+                  }
+                  this.selectedDate.setFullYear(value.year, value.month, value.day)
+                },
+              })
+            })
+          }
+        }.justifyContent(FlexAlign.SpaceBetween).padding({ bottom: 20, left: 15, right: 15, top: 20 }).width("95%").backgroundColor("#f6f8fa").margin({left: "2.5%", right: "2.5%"}).borderRadius(30).margin({top: 10})
+
+
+        Row() {
+          Row() {
+            Text("是否设置结束日期 ").fontSize(18)
+          }.alignItems(VerticalAlign.Center)
+
+          Row() {
+            Toggle({ type: ToggleType.Switch, isOn: this.needEndTime })
+              .selectedColor('#ff7f00')
+              .switchPointColor('#FFFFFF')
+              .onChange((isOn: boolean) => {
+                this.needEndTime = isOn;
+              })
+          }
+        }
+        .justifyContent(FlexAlign.SpaceBetween)
+        .padding({ bottom: 20, left: 15, right: 15, top: 20 })
+        .width("95%")
+        .backgroundColor("#f6f8fa")
+        .borderRadius(30)
+        .margin({ top: 10 })
+
+
+
+        if (this.needEndTime) {
+          Row() {
+            Row() {
+              Text("结束时间").fontSize(18)
+            }
+
+            Row() {
+              Text(getEndTimeInit(this.formData.end_time).dateStr).fontColor("#328dff").fontSize(16).onClick(() => {
+                DatePickerDialog.show({
+                  start: new Date("2000-1-1"),
+                  end: new Date("2100-12-31"),
+                  lunar: false,
+                  selected: getEndTimeInit(this.formData.start_time).originFormat,
+                  onAccept: (value: DatePickerResult) => {
+                    // 通过Date的setFullYear方法设置按下确定按钮时的日期，这样当弹窗再次弹出时显示选中的是上一次确定的日期
+                    if (value) {
+                      const year = value.year;
+                      const month =(value?.month || 0) + 1;
+                      const day = value?.day;
+                      this.formData.end_time = new Date(`${year}-${month}-${day}}`).getTime();
+                      // this.dateStartChange();
+                    }
+                    getEndTimeInit(this.formData.start_time).originFormat.setFullYear(value.year, value.month, value.day)
+                  },
+                })
+              })
+            }
+          }.justifyContent(FlexAlign.SpaceBetween).padding({ bottom: 20, left: 15, right: 15, top: 20 }).width("95%").backgroundColor("#f6f8fa").margin({left: "2.5%", right: "2.5%"}).borderRadius(30).margin({top: 10})
+
+
+        }
+
+
+        Column() {
+          Button({ type: ButtonType.Capsule, stateEffect: false }) {
+            Row() {
+              Image($r("app.media.send")).width(20).height(20)
+              Text("创建").fontSize(18).fontColor("white").margin({ left: 5 })
+            }.alignItems(VerticalAlign.Center)
+          }.height(50).width("90%").onClick(() => {
+            // this.saveResult();
+          })
+        }.margin({ top: 20 })
+
+
+        }.margin({ bottom: 70 })
+      }
+
+    }.width("100%").height("100%")
   }
 }

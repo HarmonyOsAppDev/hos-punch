@@ -1,6 +1,7 @@
 import { activeConfig } from '../constants'
 import { SelectDateType } from '../types'
 import { getDaysOfMonthWithFirstDayOfWeek } from '../utils/helper'
+import router from '@ohos.router'
 
 @Entry
 @Component
@@ -59,6 +60,18 @@ export struct HomePage {
     })
   }
 
+  toAddTarget() {
+    router.pushUrl({
+      url: "pages/AddTarget", // 目标url
+    }, router.RouterMode.Standard, (err) => {
+      if (err) {
+        console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
+        return;
+      }
+      console.info('Invoke pushUrl succeeded.');
+    });
+  }
+
   build() {
     Column() {
       Row() {
@@ -66,14 +79,19 @@ export struct HomePage {
           Image($r('app.media.chart')).width(30).height(30).opacity(0)
         }
 
-        Row() {
-          Text(`${this.currentDate.year}年${this.currentDate.month}月`).fontSize(20).fontWeight(500)
-          Image($r('app.media.caret_down')).width(15).height(15).margin({left: 5})
-        }.onClick(() => this.changeMonth())
+        if (this.currentDate) {
+          Row() {
+            Text(`${this.currentDate?.year}年${this.currentDate?.month}月`).fontSize(20).fontWeight(500)
+            Image($r('app.media.caret_down')).width(15).height(15).margin({left: 5})
+          }.onClick(() => this.changeMonth())
+        }
 
         Column() {
           Image($r('app.media.plus')).width(25).height(25)
-        }
+        }.onClick(() => {
+          this.toAddTarget();
+        })
+
       }.justifyContent(FlexAlign.SpaceBetween).width("100%").padding({left: 15, right: 15, top: 5})
 
 
