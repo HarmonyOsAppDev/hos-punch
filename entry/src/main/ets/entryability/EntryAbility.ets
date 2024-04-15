@@ -2,10 +2,34 @@ import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { SingleEntity } from './singleEnity';
+import distributedKVStore from '@ohos.data.distributedKVStore';
+import { BusinessError } from '@kit.BasicServicesKit';
+
+
+let kvManager: distributedKVStore.KVManager;
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
+
+    let context = this.context;
+
+    const kvManagerConfig: distributedKVStore.KVManagerConfig = {
+      context: context,
+      bundleName: 'com.yuanzi.myapplication'
+    };
+
+    try {
+      kvManager = distributedKVStore.createKVManager(kvManagerConfig);
+      console.info("Succeeded in creating KVManager");
+    } catch (e) {
+      let error = e as BusinessError;
+      console.error(`Failed to create KVManager.code is ${error.code},message is ${error.message}`);
+    }
+
+    console.info('成功创建 KVManager.');
+
+    globalThis.kvManager = kvManager;
   }
 
   onDestroy(): void {
@@ -16,6 +40,8 @@ export default class EntryAbility extends UIAbility {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
     let context = this.context;
+
+    globalThis.resourceManager = context.resourceManager;
 
     SingleEntity.getInstance().setResourceManager(context.resourceManager);
 

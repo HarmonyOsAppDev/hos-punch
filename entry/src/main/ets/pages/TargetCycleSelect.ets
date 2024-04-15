@@ -1,5 +1,5 @@
 import router from '@ohos.router';
-import { activeConfig, cycleList, weekDayMap } from '../constants';
+import { activeConfig, ColorConfig, cycleList, weekDayMap } from '../constants';
 import { TargetCycleSelectType, TargetTabType, CurrentSelectedDataType, CycleType } from '../types';
 
 
@@ -97,7 +97,7 @@ export struct TargetCycleSelect {
                   .fontWeight(this.isSelected(item.id) ? 600 : 400)
                 if (this.isSelected(item.id)) {
                   Column() {
-                  }.width(20).height(3).backgroundColor("#ff7f00").margin({ top: 10 }).borderRadius(10)
+                  }.width(20).height(3).backgroundColor(ColorConfig.THEME_ORANGE_COLOR).margin({ top: 10 }).borderRadius(10)
                 }
               }.justifyContent(FlexAlign.Center).onClick(() => this.changeTabIndex(item.id))
             }.padding({ left: 20, right: 20 })
@@ -121,7 +121,7 @@ export struct TargetCycleSelect {
                 Text(weekDayMap[String(val - 1)]).textAlign(TextAlign.Center).fontWeight(600).zIndex(2)
                 .fontColor(this.CurrentSelectedData.weekData.includes(val) ? "white" : activeConfig.active)
                 if (this.CurrentSelectedData.weekData.includes(val)) {
-                  Column().backgroundColor("#ff7f00").borderRadius(50).width("70%").height("50%").position({x: "15%", y: "25%"}).zIndex(1)
+                  Column().backgroundColor(ColorConfig.THEME_ORANGE_COLOR).borderRadius(50).width("70%").height("50%").position({x: "15%", y: "25%"}).zIndex(1)
                 }
               }.height(50).justifyContent(FlexAlign.Center).width("100%").onClick(() => {
 
@@ -153,7 +153,7 @@ export struct TargetCycleSelect {
                 Text(String(val)).textAlign(TextAlign.Center).fontWeight(600).zIndex(2)
                   .fontColor(this.CurrentSelectedData.monthData.includes(val) ? "white" : activeConfig.active)
                 if (this.CurrentSelectedData.monthData.includes(val)) {
-                  Column().backgroundColor("#ff7f00").borderRadius(50).width("50%").height("50%").position({x: "25%", y: "25%"}).zIndex(1)
+                  Column().backgroundColor(ColorConfig.THEME_ORANGE_COLOR).borderRadius(50).width("50%").height("50%").position({x: "25%", y: "25%"}).zIndex(1)
                 }
               }.height(50).justifyContent(FlexAlign.Center).width("100%")
               .onClick(() => {

@@ -1,4 +1,4 @@
-import { activeConfig, timeConfig } from '../constants';
+import { activeConfig, ColorConfig, timeConfig } from '../constants';
 import {  TimeConfigType } from '../types';
 
 @Component
@@ -16,7 +16,6 @@ export struct TomatoModule {
 
   build() {
     Column() {
-
       Scroll(this.scroller) {
         Row() {
           ForEach(this.timeConfigState, (item: TimeConfigType, index: number) => {
@@ -25,7 +24,7 @@ export struct TomatoModule {
                 .height(30)
                 .fontSize(14)
                 .textAlign(TextAlign.Center)
-                .fontColor(this.selectTimeIndex === item.id ? "#ff7f00" : activeConfig.normal)
+                .fontColor(this.selectTimeIndex === item.id ? ColorConfig.THEME_ORANGE_COLOR : activeConfig.normal)
 
 
             }.padding({left: 15, right: 15}).backgroundColor(this.selectTimeIndex === item.id ? "#f1f3f4" : undefined).borderRadius(20).onClick(() => {
@@ -33,7 +32,7 @@ export struct TomatoModule {
               this.changeTimeIndex(item.id);
             })
           })
-        }.padding({left: 15, right: 15}).margin({ top: 15 })
+        }.padding({left: 15, right: 15}).margin({ top: 5 })
       }
       .scrollable(ScrollDirection.Horizontal)
       .scrollBar(BarState.Off)  // 滚动条常驻显示
@@ -72,9 +71,9 @@ export struct TomatoModule {
         }).borderRadius(8).padding({left: 40, right: 40 }).type(ButtonType.Normal).fontSize(16).margin({top: 30})
 
 
-      }.justifyContent(FlexAlign.Center).margin({ top: "20%"})
+      }.justifyContent(FlexAlign.Center).margin({top: "20%"})
 
 
-    }
+    }.height("100%").width("100%")
   }
 }

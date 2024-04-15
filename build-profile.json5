@@ -6,9 +6,9 @@
         "type": "HarmonyOS",
         "material": {
           "certpath": "/Users/ryderdu/.ohos/config/default_punchin2_hzD-KN3xk4_mU1EV6C6Ut5qHk39sQ6_DfIFx4RpeWHk=.cer",
-          "storePassword": "0000001AA95E3FC554B9F523C800CDFCE4AC83C4607161883BC9C05076E88E172F9AA96175817F08D963",
+          "storePassword": "0000001A87112DAD5C885A4B7D70391A162181B2E7E8357C47C486FEBC79B7BD0DE1D7FB76EE47B5A085",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001A7CC464D014B64CBFF1C9B7C4032CDE26A29F198D5960C4B32FD6BBB657882693FDF36900C274",
+          "keyPassword": "0000001AD734410AAB6F883C1C47CA1749EEE1BB964041E34698D591950D24784D174AEB61ADA3860789",
           "profile": "/Users/ryderdu/.ohos/config/default_punchin2_hzD-KN3xk4_mU1EV6C6Ut5qHk39sQ6_DfIFx4RpeWHk=.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "/Users/ryderdu/.ohos/config/default_punchin2_hzD-KN3xk4_mU1EV6C6Ut5qHk39sQ6_DfIFx4RpeWHk=.p12"

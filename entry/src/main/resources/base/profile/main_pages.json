@@ -3,6 +3,7 @@
     "pages/Index",
     "pages/AddTarget",
     "pages/Privacy",
+    "pages/Advice",
     "pages/TargetCycleSelect"
   ]
 }

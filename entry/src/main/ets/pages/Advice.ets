@@ -4,7 +4,7 @@ import { activeConfig } from '../constants';
 
 @Entry
 @Component
-struct Privacy {
+struct Advice {
   webviewController: web_webview.WebviewController = new web_webview.WebviewController();
 
   private backToLastPage() {
@@ -17,10 +17,10 @@ struct Privacy {
         Row() {
           Image($r('app.media.back'))
             .width(25).height(25).margin(20).onClick(this.backToLastPage)
-          Text("隐私政策").fontSize(18).fontColor(activeConfig.active).fontWeight(600)
+          Text("建议反馈").fontSize(18).fontColor(activeConfig.active).fontWeight(600)
         }.alignItems(VerticalAlign.Center)
       }.width("100%").justifyContent(FlexAlign.SpaceBetween)
-      Web({ src: $rawfile('privacy.html'), controller: this.webviewController }).darkMode(WebDarkMode.Off)
+      Web({ src: "https://b3wwgxofbm.feishu.cn/share/base/form/shrcnUrmvwDwg8pKOBJ2Mf6mjSe", controller: this.webviewController }).darkMode(WebDarkMode.Off)
     }
   }
 }

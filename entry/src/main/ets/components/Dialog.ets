@@ -10,7 +10,10 @@ export const showDialog = (title: string, message: string) => {
       offset: { dx: 0, dy: -20 },
       gridCount: 3,
       confirm: {
-        value: 'ok',
+        value: '知道了',
+        enabled: true,
+        defaultFocus: true,
+        style: DialogButtonStyle.HIGHLIGHT,
         action: () => {
           console.info('Button-clicking callback')
         }

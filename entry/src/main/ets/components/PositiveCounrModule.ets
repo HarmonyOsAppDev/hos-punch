@@ -6,8 +6,6 @@ export struct PositiveCounrModule {
 
   @State timeConfigState: TimeConfigType[] = timeConfig;
 
-
-
   build() {
     Column() {
       Row() {
@@ -19,7 +17,7 @@ export struct PositiveCounrModule {
         .backgroundColor("rgba(255, 185, 115, 0.26)")
         .borderRadius(15)
 
-      }.justifyContent(FlexAlign.End).width("100%").margin({right: 15, top: 5})
+      }.justifyContent(FlexAlign.End).width("100%").margin({ right: 15 })
 
 
 
@@ -34,10 +32,7 @@ export struct PositiveCounrModule {
           color: activeConfig.active,
         }).borderRadius(8).padding({left: 40, right: 40 }).type(ButtonType.Normal).fontSize(16).margin({top: 30})
 
-
-      }.justifyContent(FlexAlign.Center).margin({ top: "20%"})
-
-
-    }
+      }.justifyContent(FlexAlign.Center).margin({top: "20%"})
+    }.height("100%").width("100%")
   }
 }

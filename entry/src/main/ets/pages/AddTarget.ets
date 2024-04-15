@@ -1,25 +1,29 @@
 import router from '@ohos.router'
-import { TypeDialogManager } from '../components/Dialog';
-import { activeConfig } from '../constants';
+import { showDialog, TypeDialogManager } from '../components/Dialog';
+import { activeConfig, ColorConfig, punch_event_name, period_types_map } from '../constants';
+import DatabaseManager from '../services/DatabaseManager';
 import { Icon_list } from '../statics';
-import { CycleType, IconItemType, NewTaskType, PeriodType, TargetCycleSelectType } from '../types';
+import { CycleType, IconItemType, NewTaskType, TargetCycleSelectType, PeriodType, TaskStatus } from '../types';
+import { generateNanoId } from '../utils/generate';
 import { getEndTimeInit, getYMD, monthChangeStr, weekDayChangeStr } from '../utils/helper';
 
 @Entry
 @Component
 export struct AddTarget {
   @State formData: NewTaskType = {
-    id: 0,
+    id: "0",
     title: "默认打卡主题",
     icon: Icon_list[0].url,
-    period: PeriodType.DAY,
     cycle: [1, 2, 3, 4, 5, 6, 7],
     cycleType: CycleType.WEEK,
+    target_type: PeriodType.DAY,
     punch_count: 1,
-    allow_surpass: false,
     allow_popcard:  false,
-    start_time: new Date().getTime(),
+    start_time: new Date(getYMD().dateStr).getTime(),
+    support_multi: false,
     end_time: undefined,
+    status: TaskStatus.NORMAL,
+    punch_days: 0,
   }
 
   @State currentEditKey: keyof NewTaskType = "title" ;
@@ -27,6 +31,7 @@ export struct AddTarget {
   private scroller: Scroller = new Scroller()
   private selectedDate: Date = new Date();
   private DialogInstance: CustomDialogController | undefined = undefined;
+  private period_types_map: string[] = period_types_map;
 
   onPageShow() {
     if (router.getParams()) {
@@ -78,6 +83,30 @@ export struct AddTarget {
     })
   }
 
+  async submitResult(): Promise<void> {
+    if (this.formData.title === '') {
+      return showDialog("错误提示", `打卡目标不能为空！ ㅤ    ㅤ     ㅤ  `);
+    }
+
+    if (this.formData?.end_time && (this.formData?.end_time < new Date().getTime() || this.formData?.end_time < this.formData.start_time)) {
+      return showDialog("错误提示", `结束时间不能小于当前时间且不能小于开始时间！(譬如不能设置当天为结束时间) ㅤ    ㅤ     ㅤ`);
+    }
+
+    const currentPunchInList = await DatabaseManager.getAllPunchInData();
+
+    console.error(JSON.stringify(currentPunchInList))
+
+    this.formData.id = await generateNanoId(32);
+
+    const insertData = currentPunchInList.concat(this.formData);
+
+    DatabaseManager.set(punch_event_name.PUNCH_IN_ALL_DATA, JSON.stringify(insertData));
+
+    router.replaceUrl({
+      url: "pages/Index",
+    });
+  }
+
   build() {
     Column() {
       Row() {
@@ -91,7 +120,9 @@ export struct AddTarget {
         Text("新的打卡目标").fontSize(20).fontWeight(500)
       }
 
-        Text("保存").fontSize(16).fontWeight(400)
+        Text("保存").fontSize(16).fontWeight(400).onClick(() => {
+          this.submitResult();
+        })
 
     }.justifyContent(FlexAlign.SpaceBetween).width("100%").padding({left: 15, right: 15, top: 5}).margin({bottom: 15})
 
@@ -104,7 +135,7 @@ export struct AddTarget {
             }
 
             Row() {
-              Text(this.formData.title)
+              Text(this.formData.title || '--')
                 .fontSize(18)
                 .maxLines(1)
                 .width("66%")
@@ -117,6 +148,9 @@ export struct AddTarget {
                 })
                 .fontColor("#777")
                 .textAlign(TextAlign.End)
+                .margin({right: 5})
+
+              Image($r("app.media.right_arrow")).width(15).height(15)
             }
           }
           .justifyContent(FlexAlign.SpaceBetween)
@@ -161,7 +195,7 @@ export struct AddTarget {
                   Image($r(item.url)).width(40).height(40).zIndex(2)
                   if (this.formData.icon === item.url) {
                     Column()
-                      .backgroundColor("#ff7f00")
+                      .backgroundColor(ColorConfig.THEME_ORANGE_COLOR)
                       .borderRadius(50)
                       .width("30%")
                       .height("10%")
@@ -183,43 +217,81 @@ export struct AddTarget {
           .margin({ top: 10 })
 
 
-          Row() {
-            Row() {
-              Text("打卡周期").fontSize(18)
-            }
 
-            Row() {
-              Text(this.formData.cycleType === CycleType.WEEK ? weekDayChangeStr(this.formData.cycle) : monthChangeStr(this.formData.cycle))
-                .fontSize(18)
-                .maxLines(1)
-                .width("66%")
-                .onClick(() => {
-                  this.goToSelectCyclePage();
-                })
-                .fontColor(activeConfig.normal)
-                .textAlign(TextAlign.End)
-                .padding({ right: 8 })
-            }
+        Row() {
+          Row() {
+            Text("打卡周期").fontSize(18)
           }
-          .justifyContent(FlexAlign.SpaceBetween)
-          .padding({ bottom: 20, left: 15, right: 15, top: 20 })
-          .width("95%")
-          .backgroundColor("#f6f8fa")
-          .margin({ left: "2.5%", right: "2.5%" })
-          .borderRadius(30)
-          .margin({ top: 10 })
+
+          Row() {
+            Text(this.period_types_map[this.formData.target_type])
+              .fontSize(18)
+              .maxLines(1)
+              .width("66%")
+              .onClick(() => {
+                TextPickerDialog.show({
+                  range: this.period_types_map,
+                  selected: this.formData.target_type,
+                  onAccept: (value: TextPickerResult) => {
+                    this.formData.target_type = value.index as PeriodType;
+                  },
+                })
+              })
+              .fontColor(activeConfig.normal)
+              .textAlign(TextAlign.End)
+              .padding({ right: 8 })
+            Image($r("app.media.right_arrow")).width(15).height(15)
+          }
+        }
+        .justifyContent(FlexAlign.SpaceBetween)
+        .padding({ bottom: 20, left: 15, right: 15, top: 20 })
+        .width("95%")
+        .backgroundColor("#f6f8fa")
+        .margin({ left: "2.5%", right: "2.5%" })
+        .borderRadius(30)
+        .margin({ top: 10 })
+
+
+
+        Row() {
+          Row() {
+            Text("打卡周期").fontSize(18)
+          }
+
+          Row() {
+            Text(this.formData.cycleType === CycleType.WEEK ? weekDayChangeStr(this.formData.cycle) : monthChangeStr(this.formData.cycle))
+              .fontSize(18)
+              .maxLines(1)
+              .width("66%")
+              .onClick(() => {
+                this.goToSelectCyclePage();
+              })
+              .fontColor(activeConfig.normal)
+              .textAlign(TextAlign.End)
+              .padding({ right: 8 })
+
+              Image($r("app.media.right_arrow")).width(15).height(15)
+          }
+        }
+        .justifyContent(FlexAlign.SpaceBetween)
+        .padding({ bottom: 20, left: 15, right: 15, top: 20 })
+        .width("95%")
+        .backgroundColor("#f6f8fa")
+        .margin({ left: "2.5%", right: "2.5%" })
+        .borderRadius(30)
+        .margin({ top: 10 })
 
 
           Row() {
             Row() {
-              Text("目标打卡数量").fontSize(18)
+              Text(`${this.period_types_map[this.formData.target_type]}打卡总量`).fontSize(18)
             }
 
             Row() {
               Text(String(this.formData.punch_count))
                 .fontSize(18)
                 .maxLines(1)
-                .width("66%")
+                .width("50%")
                 .onClick(() => {
                   this.createTypeDialog(
                     this.formData.punch_count,
@@ -231,7 +303,8 @@ export struct AddTarget {
                 .fontColor(activeConfig.normal)
                 .textAlign(TextAlign.End)
                 .padding({ right: 10 })
-            }
+              Image($r("app.media.right_arrow")).width(15).height(15)
+            }.margin({ right: 2 })
           }
           .justifyContent(FlexAlign.SpaceBetween)
           .padding({ bottom: 20, left: 15, right: 15, top: 20 })
@@ -241,26 +314,26 @@ export struct AddTarget {
           .borderRadius(30)
           .margin({ top: 10 })
 
-          Row() {
-            Row() {
-              Text("允许多次打卡 ").fontSize(18)
-            }.alignItems(VerticalAlign.Center)
-
-            Row() {
-              Toggle({ type: ToggleType.Switch, isOn: false })
-                .selectedColor('#ff7f00')
-                .switchPointColor('#FFFFFF')
-                .onChange((isOn: boolean) => {
-                  // this.isTop = isOn;
-                })
-            }
-          }
-          .justifyContent(FlexAlign.SpaceBetween)
-          .padding({ bottom: 20, left: 15, right: 15, top: 20 })
-          .width("95%")
-          .backgroundColor("#f6f8fa")
-          .borderRadius(30)
-          .margin({ top: 10 })
+          // Row() {
+          //   Row() {
+          //     Text("允许多次打卡 ").fontSize(18)
+          //   }.alignItems(VerticalAlign.Center)
+          //
+          //   Row() {
+          //     Toggle({ type: ToggleType.Switch, isOn: this.formData.support_multi })
+          //       .selectedColor(ColorConfig.THEME_ORANGE_COLOR)
+          //       .switchPointColor('#FFFFFF')
+          //       .onChange((isOn: boolean) => {
+          //         this.formData.support_multi = isOn;
+          //       })
+          //   }
+          // }
+          // .justifyContent(FlexAlign.SpaceBetween)
+          // .padding({ bottom: 20, left: 15, right: 15, top: 20 })
+          // .width("95%")
+          // .backgroundColor("#f6f8fa")
+          // .borderRadius(30)
+          // .margin({ top: 10 })
 
           Row() {
             Row() {
@@ -268,11 +341,11 @@ export struct AddTarget {
             }.alignItems(VerticalAlign.Center)
 
             Row() {
-              Toggle({ type: ToggleType.Switch, isOn: false })
-                .selectedColor('#ff7f00')
+              Toggle({ type: ToggleType.Switch, isOn: this.formData.allow_popcard })
+                .selectedColor(ColorConfig.THEME_ORANGE_COLOR)
                 .switchPointColor('#FFFFFF')
                 .onChange((isOn: boolean) => {
-                  // this.isTop = isOn;
+                  this.formData.allow_popcard = isOn;
                 })
             }
           }
@@ -308,7 +381,8 @@ export struct AddTarget {
                   this.selectedDate.setFullYear(value.year, value.month, value.day)
                 },
               })
-            })
+            }).margin({right: 5})
+            Image($r("app.media.right_arrow")).width(15).height(15)
           }
         }.justifyContent(FlexAlign.SpaceBetween).padding({ bottom: 20, left: 15, right: 15, top: 20 }).width("95%").backgroundColor("#f6f8fa").margin({left: "2.5%", right: "2.5%"}).borderRadius(30).margin({top: 10})
 
@@ -320,10 +394,14 @@ export struct AddTarget {
 
           Row() {
             Toggle({ type: ToggleType.Switch, isOn: this.needEndTime })
-              .selectedColor('#ff7f00')
+              .selectedColor(ColorConfig.THEME_ORANGE_COLOR)
               .switchPointColor('#FFFFFF')
               .onChange((isOn: boolean) => {
                 this.needEndTime = isOn;
+                if (isOn) {
+                  // 打开的时候把结束时间默认设为下个月
+                  this.formData.end_time = getEndTimeInit(new Date(this.formData.start_time).getTime()).originFormat.getTime();
+                }
               })
           }
         }
@@ -343,12 +421,12 @@ export struct AddTarget {
             }
 
             Row() {
-              Text(getEndTimeInit(this.formData.end_time).dateStr).fontColor("#328dff").fontSize(16).onClick(() => {
+              Text(getYMD(this.formData.end_time).dateStr).fontColor("#328dff").fontSize(16).onClick(() => {
                 DatePickerDialog.show({
                   start: new Date("2000-1-1"),
                   end: new Date("2100-12-31"),
                   lunar: false,
-                  selected: getEndTimeInit(this.formData.start_time).originFormat,
+                  selected: new Date(this.formData.end_time),
                   onAccept: (value: DatePickerResult) => {
                     // 通过Date的setFullYear方法设置按下确定按钮时的日期，这样当弹窗再次弹出时显示选中的是上一次确定的日期
                     if (value) {
@@ -358,10 +436,11 @@ export struct AddTarget {
                       this.formData.end_time = new Date(`${year}-${month}-${day}}`).getTime();
                       // this.dateStartChange();
                     }
-                    getEndTimeInit(this.formData.start_time).originFormat.setFullYear(value.year, value.month, value.day)
+                    new Date(this.formData.end_time).setFullYear(value.year, value.month, value.day)
                   },
                 })
-              })
+              }).margin({right: 5})
+              Image($r("app.media.right_arrow")).width(15).height(15)
             }
           }.justifyContent(FlexAlign.SpaceBetween).padding({ bottom: 20, left: 15, right: 15, top: 20 }).width("95%").backgroundColor("#f6f8fa").margin({left: "2.5%", right: "2.5%"}).borderRadius(30).margin({top: 10})
 
@@ -376,7 +455,7 @@ export struct AddTarget {
               Text("创建").fontSize(18).fontColor("white").margin({ left: 5 })
             }.alignItems(VerticalAlign.Center)
           }.height(50).width("90%").onClick(() => {
-            // this.saveResult();
+            this.submitResult();
           })
         }.margin({ top: 20 })
 

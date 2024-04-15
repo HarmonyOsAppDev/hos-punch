@@ -1,22 +1,23 @@
 import { TAB_MENU } from '../constants'
 
+// 这里本来用TAB_MENU枚举做key，但是会报错，莫名其妙
 export const menu_index = {
-  [TAB_MENU.INDEX]: {
+  0: {
     active: "app.media.home_active",
     normal: "app.media.home",
     name: "打卡",
   },
-  [TAB_MENU.TARGET]: {
+  1: {
     active: "app.media.target_active",
     normal: "app.media.target",
     name: "目标"
   },
-  [TAB_MENU.FOCUS]: {
+  2: {
     active: "app.media.focus_active",
     normal: "app.media.focus",
     name: "专注"
   },
-  [TAB_MENU.SETTING]: {
+  3: {
     active: "app.media.setting_active",
     normal: "app.media.setting",
     name: "设置"

@@ -1,4 +1,4 @@
-import { TargetTabType } from '../types'
+import {  TargetTabType } from '../types'
 
 export enum TAB_MENU {
   "INDEX" = 0,
@@ -10,7 +10,8 @@ export enum TAB_MENU {
 export const tabList: TargetTabType[] = [
   {str: "进行中", id: 0},
   {str: "已结束", id: 1},
-  {str: "全部", id: 2}
+  {str: "未开始", id: 2},
+  {str: "全部", id: 3}
 ]
 
 export const cycleList: TargetTabType[] = [
@@ -29,6 +30,12 @@ export const bottomTabs:  string[] = [
  "倒计时",
  "番茄钟",
 ]
+
+export const ColorConfig = {
+  THEME_ORANGE_COLOR: "#ff7f00",
+  ERROR_COLOR: "#fe4d4d",
+  NORMAL_COLOR: "#1296db",
+}
 
 export const timeConfig = [
   {
@@ -80,4 +87,13 @@ export const weekKeyMap = {
   "6": "六",
   "7": "日",
 }
+
+export const period_types_map =  ['日目标', '周目标', '月目标', '年目标', '永久目标'];
+
+export const music_config = ['白噪音', '海边', '山上清风'];
+
+export enum punch_event_name {
+  PUNCH_IN_ALL_DATA = "punch_in_all_data",
+  PUNCH_IN_DAILY = "punch_in_daily_"
+};
 

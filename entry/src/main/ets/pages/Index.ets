@@ -8,7 +8,6 @@ import { TargetPage } from './TargetPage';
 @Entry
 @Component
 struct Index {
-  @State message: string = 'Hello World2223';
   private tabsController : TabsController = new TabsController()
   @State currentIndex: number = TAB_MENU.INDEX;
 
@@ -21,6 +20,16 @@ struct Index {
       Text(menu_index[targetIndex].name).fontSize(12).margin({top: 2}).fontColor(this.currentIndex === targetIndex ? BottomText.activeColor : BottomText.textColor)
     }
   }
+
+  // async onPageShow() {
+  //     try {
+  //       if (!await DatabaseManager.get(punch_event_name.PUNCH_IN_ALL_DATA)) {
+  //         await DatabaseManager.setOrCreate(punch_event_name.PUNCH_IN_ALL_DATA, JSON.stringify(testInitData))
+  //       }
+  //     } catch(e) {
+  //       console.error(`JSON.ST:${e}`);
+  //     }
+  // }
 
 
   build() {
@@ -41,8 +50,6 @@ struct Index {
         TabContent(){
           SettingPage();
         }.tabBar(this.TabBuilder(TAB_MENU.SETTING))
-
-
       }.margin({bottom: 5}).onChange((index) => {
         this.currentIndex = index
       })
