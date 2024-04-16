@@ -30,7 +30,7 @@ export struct SettingPage {
               // this.isTop = isOn;
             })
         }
-      }.justifyContent(FlexAlign.SpaceBetween).padding({ bottom: 10, left: 15, right: 15, top: 10 }).width("90%").backgroundColor("#f6f8fa").borderRadius(15).margin({top: 20})
+      }.justifyContent(FlexAlign.SpaceBetween).padding({ bottom: 10, left: 15, right: 15, top: 10 }).width("90%").backgroundColor(ColorConfig.BOARD_BG_COLOR).borderRadius(15).margin({top: 20})
 
 
       Row() {
@@ -43,7 +43,7 @@ export struct SettingPage {
             Image($r('app.media.right_arrow')).width(20).height(20)
           }.height(30).justifyContent(FlexAlign.Center)
         }
-      }.justifyContent(FlexAlign.SpaceBetween).padding({ bottom: 10, left: 15, right: 15, top: 10 }).width("90%").backgroundColor("#f6f8fa").borderRadius(15).margin({top: 20}).onClick(() => {
+      }.justifyContent(FlexAlign.SpaceBetween).padding({ bottom: 10, left: 15, right: 15, top: 10 }).width("90%").backgroundColor(ColorConfig.BOARD_BG_COLOR).borderRadius(15).margin({top: 20}).onClick(() => {
         router.pushUrl({
           url: "pages/Privacy"
         })
@@ -59,7 +59,7 @@ export struct SettingPage {
             Image($r('app.media.right_arrow')).width(20).height(20)
           }.height(30).justifyContent(FlexAlign.Center)
         }
-      }.justifyContent(FlexAlign.SpaceBetween).padding({ bottom: 10, left: 15, right: 15, top: 10 }).width("90%").backgroundColor("#f6f8fa").borderRadius(15).margin({top: 20}).onClick(() => {
+      }.justifyContent(FlexAlign.SpaceBetween).padding({ bottom: 10, left: 15, right: 15, top: 10 }).width("90%").backgroundColor(ColorConfig.BOARD_BG_COLOR).borderRadius(15).margin({top: 20}).onClick(() => {
         router.pushUrl({
           url: "pages/Advice"
         })

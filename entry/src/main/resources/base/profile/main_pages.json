@@ -4,6 +4,7 @@
     "pages/AddTarget",
     "pages/Privacy",
     "pages/Advice",
-    "pages/TargetCycleSelect"
+    "pages/TargetCycleSelect",
+    "pages/EditTarget"
   ]
 }

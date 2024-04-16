@@ -1,6 +1,6 @@
 import router from '@ohos.router';
 import { activeConfig, ColorConfig, cycleList, weekDayMap } from '../constants';
-import { TargetCycleSelectType, TargetTabType, CurrentSelectedDataType, CycleType } from '../types';
+import { TargetCycleSelectType, TargetTabType, CurrentSelectedDataType, CycleType, CycleRouterType } from '../types';
 
 
 @Entry
@@ -10,6 +10,7 @@ export struct TargetCycleSelect {
 
   @State currentSelectCycleType: CycleType = CycleType.WEEK;
   @State selectIndex: CycleType = CycleType.WEEK;
+  @State entryMode: CycleRouterType = CycleRouterType.ADD;
 
   private originWeekAllDate: number[] = [1, 2, 3, 4, 5, 6, 7]
   private originMonthAllDate: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
@@ -30,7 +31,7 @@ export struct TargetCycleSelect {
       if (params) {
         this.currentSelectCycles = params.currentSelectCycles;
         this.currentSelectCycleType = params.currentSelectCycleType;
-
+        this.entryMode = params.mode;
         if (params.currentSelectCycleType === CycleType.MONTH) {
           this.selectIndex = CycleType.MONTH;
           this.CurrentSelectedData.monthData = params.currentSelectCycles;
@@ -49,8 +50,9 @@ export struct TargetCycleSelect {
 
   goBack() {
       let result = this.currentSelectCycles ;
-    // if (getMatchItemCollect) {
-    //   const path = this.enterType === PageType.ADD ? "pages/WriteDaily" : "pages/EditDaily";
+
+      const path = this.entryMode === CycleRouterType.ADD ? "pages/AddTarget" : "pages/EditTarget";
+
       if (this.currentSelectCycleType === CycleType.WEEK) {
         result = this.CurrentSelectedData.weekData.sort((a, b) => a - b);
       } else {
@@ -58,13 +60,12 @@ export struct TargetCycleSelect {
       }
 
       router.back({
-        url: "pages/AddTarget",
+        url: path,
         params: {
           currentSelectCycles: result,
-          currentSelectCycleType: this.currentSelectCycleType
+          currentSelectCycleType: this.currentSelectCycleType,
         }
       })
-    // }
   }
 
   build() {
@@ -170,7 +171,7 @@ export struct TargetCycleSelect {
         .margin({top: 10})
       }
 
-
+    Text("点击勾选参加/不参加打卡时间点").textAlign(TextAlign.Start).fontSize(14).fontColor(activeConfig.normal).opacity(0.6).margin({top: 10})
     }.width("100%").height("100%")
   }
 }

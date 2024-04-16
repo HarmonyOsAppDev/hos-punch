@@ -21,17 +21,6 @@ struct Index {
     }
   }
 
-  // async onPageShow() {
-  //     try {
-  //       if (!await DatabaseManager.get(punch_event_name.PUNCH_IN_ALL_DATA)) {
-  //         await DatabaseManager.setOrCreate(punch_event_name.PUNCH_IN_ALL_DATA, JSON.stringify(testInitData))
-  //       }
-  //     } catch(e) {
-  //       console.error(`JSON.ST:${e}`);
-  //     }
-  // }
-
-
   build() {
     Row() {
       Tabs({ barPosition: BarPosition.End, controller: this.tabsController, index: this.currentIndex }) {

@@ -1,6 +1,6 @@
 
 import { punch_event_name } from '../constants';
-import { NewTaskType } from '../types';
+import { NewTaskType, PersonalPunchInRecord } from '../types';
 import distributedKVStore from '@ohos.data.distributedKVStore';
 import { BusinessError } from '@kit.BasicServicesKit';
 
@@ -83,16 +83,40 @@ class DatabaseManager {
   }
 
   async set(key, data: any) {
-    let kvStore = globalThis.kvStore;
-    if (!globalThis.kvStore) {
-      kvStore = await this.getKvStore();
-    };
-    kvStore.put(key, data, (err, data) => {
-      if (err !== undefined) {
-        console.error(`Failed to put data. Code:${err.code},message:${err.message}`);
-        return;
+    try {
+      let kvStore = globalThis.kvStore;
+      if (!globalThis.kvStore) {
+        kvStore = await this.getKvStore();
+      };
+      await kvStore.put(key, data);
+    } catch (err) {
+      console.error(`Failed to put data. Code:${err.code},message:${err.message}`);
+    }
+  }
+
+  async putBatch(entries) {
+    try {
+      let kvStore = globalThis.kvStore;
+      if (!globalThis.kvStore) {
+        kvStore = await this.getKvStore();
+      };
+      await kvStore.putBatch({entries});
+      console.error(`batch put data success`);
+    } catch (err) {
+      console.error(`Failed to put data. Code:${err.code},message:${err.message}`);
+    }
+  }
+
+  async getStoreInstance(): Promise<distributedKVStore.SingleKVStore> {
+    try {
+      let kvStore = globalThis.kvStore;
+      if (!globalThis.kvStore) {
+        kvStore = await this.getKvStore();
       }
-    })
+      return kvStore;
+    } catch (err) {
+      console.error(`Failed to getStoreInstance Code:${err.code},message:${err.message}`);
+    }
   }
 
   async getAllPunchInData(): Promise<NewTaskType[] > {
@@ -109,20 +133,19 @@ class DatabaseManager {
     }
   }
 
-
-  // async getCurrentPunchIn(id) {
-  //   try {
-  //     const getPunchInList = await this.get(punch_event_name.PUNCH_IN_ALL_DATA);
-  //     if (getPunchInList !== '') {
-  //       return JSON.parse(getPunchInList || "{}");
-  //     } else {
-  //       return [];
-  //     }
-  //   } catch (err) {
-  //     console.error(`Failed to getAllPunchInData. Code:${err.code},message:${err.message}`);
-  //     return [];
-  //   }
-  // }
+  async getCurrentDatePunchInAllData(key): Promise<PersonalPunchInRecord[] > {
+    try {
+      const getPunchInList = await this.get(key);
+      if (getPunchInList !== '') {
+        return JSON.parse(getPunchInList || "{}");
+      } else {
+        return [];
+      }
+    } catch (err) {
+      console.error(`Failed to getCurrentDatePunchInAllData. Code:${err.code},message:${err.message}`);
+      return [];
+    }
+  }
 }
 
 export default new DatabaseManager();

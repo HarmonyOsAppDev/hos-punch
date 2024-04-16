@@ -1,16 +1,17 @@
 import router from '@ohos.router'
 import { showDialog, TypeDialogManager } from '../components/Dialog';
-import { activeConfig, ColorConfig, punch_event_name, period_types_map } from '../constants';
+import { activeConfig, ColorConfig, punch_event_name } from '../constants';
 import DatabaseManager from '../services/DatabaseManager';
 import { Icon_list } from '../statics';
-import { CycleType, IconItemType, NewTaskType, TargetCycleSelectType, PeriodType, TaskStatus,
-  CycleRouterType } from '../types';
+import { CycleType, IconItemType, NewTaskType, TargetCycleSelectType, TaskStatus,
+  EditTaskRouterParamsType,
+  CycleRouterType} from '../types';
 import { generateNanoId } from '../utils/generate';
 import { getEndTimeInit, getYMD, monthChangeStr, weekDayChangeStr } from '../utils/helper';
 
 @Entry
 @Component
-export struct AddTarget {
+export struct EditTarget {
   @State formData: NewTaskType = {
     id: "0",
     title: "默认打卡主题",
@@ -31,7 +32,6 @@ export struct AddTarget {
   private scroller: Scroller = new Scroller()
   private selectedDate: Date = new Date();
   private DialogInstance: CustomDialogController | undefined = undefined;
-  private period_types_map: string[] = period_types_map;
 
   onPageShow() {
     if (router.getParams()) {
@@ -39,6 +39,12 @@ export struct AddTarget {
       if (params) {
         this.formData.cycle = params.currentSelectCycles;
         this.formData.cycleType = params.currentSelectCycleType;
+      }
+
+      const paramsWithEditMode = router.getParams() as EditTaskRouterParamsType;
+
+      if (paramsWithEditMode?.currentItem ) {
+        this.formData = paramsWithEditMode.currentItem;
       }
     }
   }
@@ -79,14 +85,14 @@ export struct AddTarget {
       params: {
         currentSelectCycles: this.formData.cycle,
         currentSelectCycleType: this.formData.cycleType,
-        mode: CycleRouterType.ADD,
+        mode: CycleRouterType.EDIT,
       }
     })
   }
 
   async submitResult(): Promise<void> {
     if (this.formData.title === '') {
-      return showDialog("错误1提示", `打卡目标不能为空！ ㅤ    ㅤ     ㅤ  `);
+      return showDialog("错误提示", `打卡目标不能为空！ ㅤ    ㅤ     ㅤ  `);
     }
 
     if (this.formData?.end_time && (this.formData?.end_time < new Date().getTime() || this.formData?.end_time < this.formData.start_time)) {
@@ -95,13 +101,14 @@ export struct AddTarget {
 
     const currentPunchInList = await DatabaseManager.getAllPunchInData();
 
-    this.formData.id = await generateNanoId(32);
+    const newData = currentPunchInList.map(item => {
+       if (item.id === this.formData.id) {
+         item = this.formData;
+       }
+      return item;
+    })
 
-    this.formData.end_time = this.needEndTime ? this.formData.end_time : undefined;
-
-    const insertData = currentPunchInList.concat(this.formData);
-
-    DatabaseManager.set(punch_event_name.PUNCH_IN_ALL_DATA, JSON.stringify(insertData));
+    DatabaseManager.set(punch_event_name.PUNCH_IN_ALL_DATA, JSON.stringify(newData));
 
     router.replaceUrl({
       url: "pages/Index",
@@ -173,7 +180,7 @@ export struct AddTarget {
             }
           }
           .justifyContent(FlexAlign.SpaceBetween)
-          .padding({ bottom: 10, left: 15, right: 15, top: 10 })
+          .padding({ bottom: 20, left: 15, right: 15, top: 20 })
           .width("95%")
           .backgroundColor(ColorConfig.BOARD_BG_COLOR)
           .margin({ left: "2.5%", right: "2.5%" })
@@ -218,42 +225,6 @@ export struct AddTarget {
           .margin({ top: 10 })
 
 
-
-        // Row() {
-        //   Row() {
-        //     Text("打卡周期").fontSize(18)
-        //   }
-        //
-        //   Row() {
-        //     Text(this.period_types_map[this.formData.target_type])
-        //       .fontSize(18)
-        //       .maxLines(1)
-        //       .width("66%")
-        //       .onClick(() => {
-        //         TextPickerDialog.show({
-        //           range: this.period_types_map,
-        //           selected: this.formData.target_type,
-        //           onAccept: (value: TextPickerResult) => {
-        //             this.formData.target_type = value.index as PeriodType;
-        //           },
-        //         })
-        //       })
-        //       .fontColor(activeConfig.normal)
-        //       .textAlign(TextAlign.End)
-        //       .padding({ right: 8 })
-        //     Image($r("app.media.right_arrow")).width(15).height(15)
-        //   }
-        // }
-        // .justifyContent(FlexAlign.SpaceBetween)
-        // .padding({ bottom: 20, left: 15, right: 15, top: 20 })
-        // .width("95%")
-        // .backgroundColor("#f6f8fa")
-        // .margin({ left: "2.5%", right: "2.5%" })
-        // .borderRadius(30)
-        // .margin({ top: 10 })
-
-
-
         Row() {
           Row() {
             Text("打卡周期").fontSize(18)
@@ -285,7 +256,7 @@ export struct AddTarget {
 
           Row() {
             Row() {
-              Text(`日打卡目标次数`).fontSize(18)
+              Text(`打卡总量`).fontSize(18)
             }
 
             Row() {

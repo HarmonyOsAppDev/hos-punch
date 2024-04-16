@@ -1,4 +1,4 @@
-import { activeConfig } from '../constants';
+import { activeConfig, ColorConfig } from '../constants';
 
 @Component
 export struct RecordModule {
@@ -38,7 +38,7 @@ export struct RecordModule {
                   .justifyContent(FlexAlign.SpaceBetween)
                   .width("90%")
                   .margin({ left: "5%", right: "5%" })
-                  .backgroundColor("#f6f8fa")
+                  .backgroundColor(ColorConfig.BOARD_BG_COLOR)
                   .padding(20)
                   .borderRadius(20)
                   .onClick(() => {

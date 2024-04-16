@@ -1,10 +1,12 @@
-import { activeConfig, ColorConfig } from '../constants'
-import { CycleType, NewTaskType, SelectDateType } from '../types'
+import { activeConfig, ColorConfig, EventCode, jiTang, punch_event_name } from '../constants'
+import { CycleType, NewTaskType, PersonalPunchInRecord, PunchDaysType, SelectDateType } from '../types'
 import { getDaysOfMonthWithFirstDayOfWeek, getYMD } from '../utils/helper'
 import router from '@ohos.router'
 import DatabaseManager from '../services/DatabaseManager'
 import systemDateTime from '@ohos.systemDateTime'
-import { showDialog } from '../components/Dialog'
+import { PosterDialog, showDialog } from '../components/Dialog'
+import { generateNanoId } from '../utils/generate'
+import emitter from '@ohos.events.emitter'
 
 @Entry
 @Component
@@ -16,19 +18,58 @@ export struct HomePage {
     day: new Date().getDate(),
   }
   @State allPunchInData: NewTaskType[] = [];
+  @State currentDatePunchInData: PersonalPunchInRecord[] = [];
   selectedDate: Date = new Date();
   private scrollerForList: Scroller = new Scroller()
+  private DialogInstance: CustomDialogController | undefined = undefined;
 
   async aboutToAppear() {
+    this.initData();
+    emitter.on({eventId: EventCode.DELETE_ACTION}, () => {
+      this.initData();
+    })
+  }
+
+  async initData() {
     this.dateChange();
     await this.getPunchInData();
   }
 
+  aboutToDisappear(): void {
+    emitter.off(EventCode.DELETE_ACTION);
+  }
+
+  createTypeDialog() {
+    this.DialogInstance = new CustomDialogController({
+      builder: PosterDialog({}),
+      alignment: DialogAlignment.Center,
+      customStyle: true,
+    });
+
+    this.DialogInstance.open();
+  }
+
   // 获取当前对应的打卡
   async getPunchInData() {
+    await this.fetchCurrentDatePunchInData();
+
     const allPunchInData = await DatabaseManager.getAllPunchInData();
+
     const getMatchPunchData = this.getCurrentMatchPunch(allPunchInData);
+
     this.allPunchInData = getMatchPunchData;
+
+  }
+
+  async fetchCurrentDatePunchInData() {
+    try {
+      const selectDateStr = `${this.currentDate.year}-${this.currentDate.month}-${this.currentDate.day}`;
+      const putKey = `${punch_event_name.PUNCH_IN_DAILY}${selectDateStr}}`;
+      const currentData = await DatabaseManager.getCurrentDatePunchInAllData(putKey);
+      this.currentDatePunchInData = currentData;
+    } catch (err) {
+      console.info('Invoke pushUrl succeeded.');
+    }
   }
 
   // 获取到当前可以打卡的任务
@@ -126,18 +167,107 @@ export struct HomePage {
   }
 
   // 打卡操作
-  async punchInAction() {
-    const systemTime = await systemDateTime.getCurrentTime(false);
-    const selectDateStr = `${this.currentDate.year}-${this.currentDate.month}-${this.currentDate.day}`;
-    if (selectDateStr !== getYMD(systemTime).dateStr) {
-        showDialog("打卡失败", "未到可打卡时间 ㅤ    ㅤ    ")
+  async punchInAction(item: NewTaskType) {
+    try {
+      const selectDateStr = `${this.currentDate.year}-${this.currentDate.month}-${this.currentDate.day}`;
+      const putKey = `${punch_event_name.PUNCH_IN_DAILY}${selectDateStr}}`;
+      const currentDatePunchInList = await DatabaseManager.getCurrentDatePunchInAllData(putKey);
+      const systemTime = await systemDateTime.getCurrentTime(false);
+      if (selectDateStr !== getYMD(systemTime).dateStr) {
+        showDialog("打卡失败", "未到可打卡时间 ㅤ    ㅤ    ");
+        return;
+      }
+
+      const insertId = await generateNanoId(32);
+
+      let punchData: PersonalPunchInRecord = {
+        id: insertId,
+        createTime: new Date().getTime(),
+        punchInCollectIn: item.id,
+        punchInCount: 1,
+      };
+
+      let newDataArr = currentDatePunchInList;
+
+      if (currentDatePunchInList.length && currentDatePunchInList.find(v => v.punchInCollectIn === item.id)) {
+        newDataArr = currentDatePunchInList.map(data => {
+          if (data.punchInCollectIn === item.id) {
+            data.punchInCount += 1;
+            punchData.punchInCount = data.punchInCount;
+          }
+          return data;
+        });
+      } else {
+        newDataArr = currentDatePunchInList.concat(punchData);
+      }
+
+
+      await DatabaseManager.set(putKey, JSON.stringify(newDataArr));
+      if (punchData.punchInCount >= item.punch_count) {
+        await this.addPunchInCount(item);
+      }
+
+      await this.getPunchInData();
+
+      if (item.allow_popcard) {
+        this.createTypeDialog();
+      }
+
+    } catch (err) {
+      showDialog("打卡失败", "发生错误！！！ ㅤ    ㅤ    ");
     }
+  }
+
+  computeProcess(item: NewTaskType) {
+    if (!this.currentDatePunchInData.length) return undefined;
+    const getItem = this.getCurrentPunchInMatchItem(item.id);
+    return ((getItem?.punchInCount || 0) / item.punch_count) * 100;
+  }
+
+
+  getCurrentPunchInMatchItem(id: string) {
+    if (!this.currentDatePunchInData.length) return undefined;
+    return this.currentDatePunchInData.filter(item => item.punchInCollectIn === id)[0];
+  }
+
+  async addPunchInCount(taskItem: NewTaskType) {
+    const currentPunchInList = await DatabaseManager.getAllPunchInData();
+    const newData = currentPunchInList.map((item: NewTaskType) => {
+      if (item.id === taskItem.id) {
+          item.punch_days += 1;
+      }
+      return item;
+    });
+    DatabaseManager.set(punch_event_name.PUNCH_IN_ALL_DATA, JSON.stringify(newData));
   }
 
   fetchPunchData(index: string) {
     this.currentDate.day = Number(index);
     this.getPunchInData();
   }
+
+  renderText(item: NewTaskType) {
+    if (item?.end_time) {
+      const distance = Math.floor((item.end_time - item.start_time) / 86400000);
+
+      if (distance < 1) {
+        return '打卡完成';
+      }
+
+      return `已坚持${item.punch_days}天，还剩${distance - item.punch_days}天！`
+    } else {
+      if (item?.punch_days === 0) {
+        return '自律使人痛苦';
+      } else {
+        return `已坚持${item.punch_days}天`
+      }
+    }
+  }
+
+  playPunchAudio() {
+
+  }
+
 
   build() {
     Column() {
@@ -219,40 +349,64 @@ export struct HomePage {
 
                 ForEach(this.allPunchInData, (item: NewTaskType, idx: number) => {
                   ListItem() {
-                    Row() {
+                    Column() {
                       Row() {
                         Row() {
-                          Column() {
-                            Image($r(item.icon)).width(45).height(45)
+                          Row() {
+                            Column() {
+                              Image($r(item.icon)).width(45).height(45)
+                            }
+
+                            Column() {
+                              Text(item.title)
+                                .fontSize(18)
+                                .fontWeight(600)
+                                .maxLines(1)
+                                .margin({ bottom: 5 })
+                                .textOverflow({ overflow: TextOverflow.Clip })
+
+                              Row() {
+                                Text(this.renderText(item))
+                                  .fontColor(activeConfig.normal)
+                                  .fontSize(12)
+                                  .margin({ right: 3 })
+                                Text(`(${this.getCurrentPunchInMatchItem(item.id)?.punchInCount || 0 }/${item.punch_count})`).fontColor(activeConfig.normal).fontSize(12)
+                              }.alignItems(VerticalAlign.Center)
+                            }.alignItems(HorizontalAlign.Start).margin({ left: 10 }).width("53%")
                           }
 
                           Column() {
-                            Text(item.title)
-                              .fontSize(18)
-                              .fontWeight(600)
-                              .maxLines(1)
-                              .margin({ bottom: 5 })
-                              .textOverflow({ overflow: TextOverflow.Clip })
-
-                            Text(`已坚持4天，还剩27天！`).fontColor(activeConfig.normal).fontSize(12)
-                          }.alignItems(HorizontalAlign.Start).margin({ left: 10 }).width("65%")
+                            // 完成打卡
+                            if ((this.getCurrentPunchInMatchItem(item.id)?.punchInCount || 0) >= item.punch_count) {
+                              Image($r("app.media.punchin_ok")).width(25).height(25)
+                            } else {
+                              Button({ type: ButtonType.Capsule, stateEffect: true }) {
+                                Row() {
+                                  Image($r("app.media.calendar")).width(20).height(20).margin({ left: 15 })
+                                  Text(`打卡`).fontSize(14).fontColor(0xffffff).margin({ left: 5, right: 15 })
+                                }.alignItems(VerticalAlign.Center).height(38)
+                              }.backgroundColor(ColorConfig.THEME_ORANGE_COLOR)
+                            }
+                          }.onClick(() => {
+                            if ((this.getCurrentPunchInMatchItem(item.id)?.punchInCount || 0) >= item.punch_count) {
+                              return;
+                            }
+                            this.punchInAction(item);
+                          })
                         }
-
-                        Column() {
-                          Image($r(idx === 0 ? "app.media.punchin" : "app.media.punchin_ok")).width(25).height(25)
-                        }.onClick(() => {
-                            this.punchInAction();
-                        })
+                        .justifyContent(FlexAlign.SpaceBetween)
+                        .width("95%")
+                        .margin({ left: "2.5%", right: "2.5%" })
+                        .backgroundColor(ColorConfig.BOARD_BG_COLOR)
+                        .padding(20)
+                        .borderRadius(20)
                       }
-                      .justifyContent(FlexAlign.SpaceBetween)
-                      .width("90%")
-                      .margin({ left: "5%", right: "5%" })
-                      .backgroundColor("#f6f8fa")
-                      .padding(20)
-                      .borderRadius(20)
-                      .onClick(() => {
-                        // this.goToTargetDataView()
-                      })
+
+                      Progress({ value: this.computeProcess(item), type: ProgressType.Linear })
+                        .width("82%").height(2).color(ColorConfig.THEME_ORANGE_COLOR)
+                        .backgroundColor(ColorConfig.BOARD_BG_COLOR)
+                        .margin({bottom: -2})
+
                     }.margin({ top: idx === 0 ? 15 : 0, bottom: idx === (this.allPunchInData.length - 1) ? 100 : 20 })
 
                   }

@@ -1,4 +1,5 @@
 import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import distributedKVStore from '@ohos.data.distributedKVStore';
 
 export enum SelectEnum {
     "PROCESS" = 0,
@@ -44,7 +45,7 @@ export type NewTaskType = {
     cycle: number[];           // 限制一个月哪天打卡，或者一个星期内哪天打卡，cycleType week类型的时候，1-7表示周一-周日
     cycleType: CycleType;     // 循环类型，这个配合cycle使用，看
     punch_count: number;      // 打卡数量
-    target_type: PeriodType;  // 任务类型，周卡，日卡，月卡
+    // target_type: PeriodType;  // 任务类型，周卡，日卡，月卡
     support_multi: boolean;   // 是否允许一天多打
     allow_popcard: boolean;  // 是否打卡后弹出仪式感弹窗
     status: TaskStatus;
@@ -55,11 +56,10 @@ export type NewTaskType = {
 
 // 用户个人打卡记录
 export type PersonalPunchInRecord = {
-    id: number;
-    isPunchIn: boolean;
-    date: number; // 当前打开日期
+    id: string;
     createTime: number; // 打卡具体时间，可能未来有用
-    punchInCollectIn: number; // 打的哪个任务的卡
+    punchInCollectIn: string; // 打的哪个任务的卡
+    punchInCount: number;
 }
 
 export enum PeriodType {
@@ -75,10 +75,20 @@ export type IconItemType = {
     url: string;
 }
 
+export enum CycleRouterType {
+    EDIT = "1",
+    ADD = "2",
+}
+
 export type TargetCycleSelectType = {
     currentSelectCycles: number[];
     currentSelectCycleType: CycleType;
     currentDate: SelectDateType;
+    mode: CycleRouterType;
+}
+
+export type EditTaskRouterParamsType = {
+    currentItem: NewTaskType;
 }
 
 export type CurrentSelectedDataType = {
@@ -92,4 +102,16 @@ export type TargetPageType = {
     [SelectEnum.OVER]:  NewTaskType[],
     [SelectEnum.UN_START]:  NewTaskType[],
     [SelectEnum.ALL]:  NewTaskType[],
+}
+
+export type entryType = {
+    key: string;
+    value: {
+        type: distributedKVStore.ValueType;
+        value: string;
+    };
+}
+
+export type PunchDaysType = {
+    punch_days: NewTaskType['punch_days'];
 }

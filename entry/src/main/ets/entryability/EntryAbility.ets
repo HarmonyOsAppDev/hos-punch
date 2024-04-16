@@ -5,15 +5,13 @@ import { SingleEntity } from './singleEnity';
 import distributedKVStore from '@ohos.data.distributedKVStore';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-
 let kvManager: distributedKVStore.KVManager;
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
-
     let context = this.context;
-
+    //
     const kvManagerConfig: distributedKVStore.KVManagerConfig = {
       context: context,
       bundleName: 'com.yuanzi.myapplication'

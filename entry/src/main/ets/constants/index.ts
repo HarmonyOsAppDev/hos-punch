@@ -35,6 +35,7 @@ export const ColorConfig = {
   THEME_ORANGE_COLOR: "#ff7f00",
   ERROR_COLOR: "#fe4d4d",
   NORMAL_COLOR: "#1296db",
+  BOARD_BG_COLOR: "#f6f8fa",
 }
 
 export const timeConfig = [
@@ -97,3 +98,20 @@ export enum punch_event_name {
   PUNCH_IN_DAILY = "punch_in_daily_"
 };
 
+
+export const jiTang = [
+  "每一次打卡，都是向目标迈进的坚实一步！",
+  "坚持不易，但每打卡一次，你就更接近成功。",
+  "今日已打卡，明日更卓越，点滴积累，铸就辉煌。",
+  "打卡不只是习惯，更是对自我承诺的坚守。",
+  "恭喜你，又完成了一天的任务，明天会更好！",
+  "连续打卡记录，映照着你不屈不挠的坚持。",
+  "点滴进步，源于每日的坚持打卡，你正闪闪发光。",
+  "打卡瞬间，见证你的毅力与成长，未来可期。",
+  "又一次成功打卡，每一天的努力都无比珍贵。",
+  "打卡不仅标记时间，更在累积你的成就与自信。"
+];
+
+export enum EventCode {
+  "DELETE_ACTION" = 1
+}
