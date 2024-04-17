@@ -1,9 +1,9 @@
 import router from '@ohos.router'
 import { showDialog, TypeDialogManager } from '../components/Dialog';
-import { activeConfig, ColorConfig, punch_event_name, period_types_map } from '../constants';
+import { activeConfig, ColorConfig, punch_event_name } from '../constants';
 import DatabaseManager from '../services/DatabaseManager';
 import { Icon_list } from '../statics';
-import { CycleType, IconItemType, NewTaskType, TargetCycleSelectType, PeriodType, TaskStatus,
+import { CycleType, IconItemType, NewTaskType, TargetCycleSelectType, TaskStatus,
   CycleRouterType } from '../types';
 import { generateNanoId } from '../utils/generate';
 import { getEndTimeInit, getYMD, monthChangeStr, weekDayChangeStr } from '../utils/helper';
@@ -31,7 +31,6 @@ export struct AddTarget {
   private scroller: Scroller = new Scroller()
   private selectedDate: Date = new Date();
   private DialogInstance: CustomDialogController | undefined = undefined;
-  private period_types_map: string[] = period_types_map;
 
   onPageShow() {
     if (router.getParams()) {

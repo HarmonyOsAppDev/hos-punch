@@ -24,7 +24,16 @@ export enum FocusSelectType {
 export type TimeConfigType = {
     id: number,
     time: number,
-    str: string
+    str: string,
+    minute: number,
+}
+
+export type TimeRecordType = {
+    id: number,
+    title: string,
+    type: FocusSelectType,
+    createTime: number,
+    focusTime: number,
 }
 
 export enum CycleType {
@@ -114,4 +123,35 @@ export type entryType = {
 
 export type PunchDaysType = {
     punch_days: NewTaskType['punch_days'];
+}
+
+export enum CountStatusType {
+    "UN_START" = 1,
+    "IN_PROCESS" = 2,
+    "IN_STOP" = 3,
+}
+
+export type RunningClockType = {
+    timeType: FocusSelectType,
+    status: CountStatusType
+}
+
+export type TomatoSettingInputKey = {
+    count: number; // 番茄数量
+    every_time_len: number; // 每个番茄时间的时长
+    rest_time_len: number; // 每个番茄时长
+    auto_to_next: boolean;
+}
+
+export enum TomatoTaskType {
+    "UN_START" = 1,
+    "REST" = 2,
+    "PROCESS" = 3,
+    "FINISHED" = 4,
+}
+
+export type TomatoTaskItem = {
+    minute: number;
+    type: TomatoTaskType;
+    tomato_current: number;
 }

@@ -4,7 +4,9 @@
     "pages/AddTarget",
     "pages/Privacy",
     "pages/Advice",
+    "pages/FocusPage",
     "pages/TargetCycleSelect",
-    "pages/EditTarget"
+    "pages/EditTarget",
+    "pages/TomatoSetting"
   ]
 }

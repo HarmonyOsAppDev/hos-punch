@@ -1,15 +1,14 @@
 
 import resmgr from '@ohos.resourceManager';
-import relationalStore from '@ohos.data.relationalStore';
+import { TomatoSettingInputKey, TomatoTaskItem, TomatoTaskType } from '../types';
 
 export class SingleEntity {
   private static instance: SingleEntity | null = null;
   private resourceManager: resmgr.ResourceManager;
-  private dbStore: relationalStore.RdbStore;
+  private tomatoSetting: TomatoTaskItem[];
 
   private constructor() {
     this.resourceManager = undefined;
-    this.dbStore = undefined;
   }
 
   setResourceManager(instance) {
@@ -20,12 +19,29 @@ export class SingleEntity {
     return this.resourceManager;
   }
 
-  getDbStore() {
-    return this.dbStore;
+  getTomatoSetting(data: TomatoSettingInputKey) {
+    return this.tomatoSetting;
   }
 
-  setDbStore(instance) {
-    this.dbStore = instance;
+  setTomatoSetting(task: TomatoSettingInputKey) {
+    const allTask: TomatoTaskItem[] = [];
+    const fillTask: string[] = new Array(task.count).fill('');
+
+    fillTask.forEach((_: string, index: number) => {
+      allTask.push({
+        minute: task.every_time_len,
+        type: TomatoTaskType.PROCESS,
+        tomato_current: index + 1
+      })
+      if (index !== fillTask.length - 1) {
+        allTask.push({
+          minute: task.rest_time_len,
+          type: TomatoTaskType.REST,
+          tomato_current: index + 1
+        })
+      }
+    });
+    this.tomatoSetting = allTask;
   }
 
   static getInstance(): SingleEntity {

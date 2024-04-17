@@ -36,43 +36,63 @@ export const ColorConfig = {
   ERROR_COLOR: "#fe4d4d",
   NORMAL_COLOR: "#1296db",
   BOARD_BG_COLOR: "#f6f8fa",
+  SAVE_BTN_COLOR: "#ff4d4f"
 }
 
 export const timeConfig = [
   {
     id: 1,
-    time: 0,
-    str: "其他"
+    time: -1,
+    str: "自定义",
+    minute: -1,
   },
   {
     id: 2,
-    time: 10 * 60 * 1000,
-    str: "10分钟"
+    time: 1 * 60 * 1000,
+    str: "1分钟",
+    minute: 1,
   },
   {
     id: 3,
-    time: 25 * 60 * 1000,
-    str: "25分钟"
+    time: 5 * 60 * 1000,
+    str: "5分钟",
+    minute: 5,
   },
   {
     id: 4,
-    time: 30 * 60 * 1000,
-    str: "30分钟"
+    time: 10 * 60 * 1000,
+    str: "10分钟",
+    minute: 10,
   },
   {
     id: 5,
-    time: 60 * 60 * 1000,
-    str: "1小时"
+    time: 25 * 60 * 1000,
+    str: "25分钟",
+    minute: 25,
   },
   {
     id: 6,
-    time: 90 * 60 * 1000,
-    str: "1小时30分"
+    time: 30 * 60 * 1000,
+    str: "30分钟",
+    minute: 30,
   },
   {
     id: 7,
+    time: 60 * 60 * 1000,
+    str: "1小时",
+    minute: 60,
+  },
+  {
+    id: 8,
+    time: 90 * 60 * 1000,
+    str: "1小时30分",
+    minute: 90,
+  },
+  {
+    id: 9,
     time: 120 * 60 * 1000,
-    str: "2小时"
+    str: "2小时",
+    minute: 120,
   },
 ]
 
@@ -95,7 +115,8 @@ export const music_config = ['白噪音', '海边', '山上清风'];
 
 export enum punch_event_name {
   PUNCH_IN_ALL_DATA = "punch_in_all_data",
-  PUNCH_IN_DAILY = "punch_in_daily_"
+  PUNCH_IN_DAILY = "punch_in_daily_",
+  RECORD_ALL = "record_all"
 };
 
 
@@ -113,5 +134,15 @@ export const jiTang = [
 ];
 
 export enum EventCode {
-  "DELETE_ACTION" = 1
+  "DELETE_ACTION" = 1,
+  "CLOSE_OTHER_RUNNING_CLOCK" = 2,
+  "TOMATO_SETTING_DATA" = 3,
+}
+
+
+export const TomatoDefaultSetting = {
+  count: 3,
+  every_time_len: 5,
+  rest_time_len: 2,
+  auto_to_next: true
 }

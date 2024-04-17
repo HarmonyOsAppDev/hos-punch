@@ -101,7 +101,7 @@ export struct FocusPage {
               })
             }.margin({right: 15})
           }.justifyContent(FlexAlign.SpaceBetween).width("100%")
-        }.width("80%").borderRadius(25).backgroundColor("white")
+        }.width("85%").borderRadius(25).backgroundColor("white")
         .shadow({
           radius: 15,
           color: "#d4d4d4"

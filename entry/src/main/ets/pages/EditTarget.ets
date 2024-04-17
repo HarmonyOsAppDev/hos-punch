@@ -125,7 +125,7 @@ export struct EditTarget {
       }
 
       Row() {
-        Text("新的打卡目标").fontSize(20).fontWeight(500)
+        Text("编辑打卡目标").fontSize(20).fontWeight(500)
       }
 
         Text("保存").fontSize(16).fontWeight(400).onClick(() => {
