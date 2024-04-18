@@ -1,8 +1,10 @@
 import { TypeDialogManager } from '../components/Dialog';
-import { ColorConfig, TomatoDefaultSetting } from '../constants';
+import { ColorConfig, EventCode, TomatoDefaultSetting } from '../constants';
 import { TomatoSettingInputKey } from '../types';
 import router from '@ohos.router';
 import { SingleEntity } from '../entryability/singleEnity';
+import { emitter } from '@kit.BasicServicesKit';
+import { isObjectEqual } from '../utils/helper';
 
 @Entry
 @Component
@@ -27,8 +29,41 @@ export struct TomatoSetting {
     this.DialogInstance.open();
   }
 
+  openSaveModal() {
+    AlertDialog.show(
+      {
+        title: '提醒',
+        message: `是否保存该番茄钟设置(如果当前有正在进行的番茄钟任务，会重置该番茄钟) ㅤ    ㅤ     `,
+        autoCancel: true,
+        alignment: DialogAlignment.Bottom,
+        gridCount: 4,
+        offset: { dx: 0, dy: -20 },
+        primaryButton: {
+          value: '取消',
+          action: () => {
+            console.info('Callback when the first button is clicked')
+          }
+        },
+        secondaryButton: {
+          enabled: true,
+          defaultFocus: true,
+          style: DialogButtonStyle.HIGHLIGHT,
+          backgroundColor: ColorConfig.NORMAL_COLOR,
+          value: '保存',
+          action: () => {
+            this.submitResult();
+          }
+        },
+        cancel: () => {
+          console.info('Closed callbacks')
+        }
+      }
+    )
+  }
+
+
   dialogAccept(str: string) {
-    this.formData[this.currentEditKey.toString()]= str;
+    this.formData[this.currentEditKey.toString()]= Number(str);
     this.DialogInstance?.close();
   }
 
@@ -36,9 +71,25 @@ export struct TomatoSetting {
     this.DialogInstance?.close();
   }
 
+  submitResultAction() {
+    this.openSaveModal();
+  }
+
   submitResult() {
-    SingleEntity.getInstance().setTomatoSetting(this.formData);
-    AppStorage.setOrCreate('TomatoDefaultSetting', this.formData);
+    const getOldData = SingleEntity.getInstance().getTomatoSettingOriginData();
+
+    const isEqual = isObjectEqual(getOldData, this.formData);
+
+    console.error(`jsadasd" ${JSON.stringify(getOldData)}`)
+
+    // 这里如果保存相同的数据，番茄时钟的时间会消失....神奇的bug
+    if (!isEqual) {
+        SingleEntity.getInstance().setTomatoSetting(JSON.parse(JSON.stringify(this.formData)));
+        SingleEntity.getInstance().setTomatoSettingOriginData(JSON.parse(JSON.stringify(this.formData)));
+        AppStorage.setOrCreate('TomatoDefaultSetting', this.formData);
+    }
+
+    emitter.emit({eventId: EventCode.TOMATO_SETTING_DATA});
     router.back();
   }
 
@@ -48,7 +99,7 @@ export struct TomatoSetting {
       Row() {
         Column() {
           Image($r('app.media.back')).width(30).height(30).onClick(() => {
-            this.submitResult();
+            this.submitResultAction();
           })
         }
 
@@ -94,18 +145,18 @@ export struct TomatoSetting {
 
     Row() {
       Row() {
-        Text("单个番茄时长").fontSize(18)
+        Text("单个番茄时长(分钟)").fontSize(18)
       }
 
       Row() {
         Text(String(this.formData.every_time_len))
           .fontSize(18)
           .maxLines(1)
-          .width("50%")
+          .width("45%")
           .onClick(() => {
             this.createTypeDialog(
               this.formData.every_time_len,
-              "单个番茄时长",
+              "单个番茄时长(分钟)",
               "every_time_len"
             );
           })
@@ -128,7 +179,7 @@ export struct TomatoSetting {
 
       Row() {
         Row() {
-          Text("休息时长").fontSize(18)
+          Text("休息时长(分钟)").fontSize(18)
         }
 
         Row() {
@@ -139,7 +190,7 @@ export struct TomatoSetting {
             .onClick(() => {
               this.createTypeDialog(
                 this.formData.rest_time_len,
-                "休息时长",
+                "休息时长(分钟)",
                 "rest_time_len"
               );
             })
@@ -157,9 +208,6 @@ export struct TomatoSetting {
       .margin({ left: "2.5%", right: "2.5%" })
       .borderRadius(30)
       .margin({ top: 10 })
-
-
-
 
       Row() {
         Row() {
@@ -188,7 +236,7 @@ export struct TomatoSetting {
             Text("保存").fontSize(18).fontColor("white").margin({ left: 5 })
           }.alignItems(VerticalAlign.Center)
         }.height(50).width("90%").onClick(() => {
-          this.submitResult();
+          this.submitResultAction();
         })
       }.margin({ top: 20 })
     }

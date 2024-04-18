@@ -57,11 +57,14 @@ export function getYMD(time?: number) {
     year: new Date(now).getFullYear(),
     month: new Date(now).getMonth() + 1,
     day: new Date(now).getDate(),
+    hour: new Date(now).getHours(),
+    minute: new Date(now).getMinutes(),
   };
 
   return {
     year_month_day: r,
     dateStr: `${r.year}-${r.month}-${r.day}`,
+    dateStrHHMM: `${r.year}-${r.month}-${r.day} ${r.hour}: ${r.minute}`,
   }
 }
 
@@ -111,6 +114,37 @@ export const monthChangeStr = (numArr: number[]) => {
   } else {
     return `没有选择周期`
   }
+}
+
+
+export function isObjectEqual(obj1, obj2) {
+  // 如果两者引用同一对象或者都是null，则它们相等
+  if (obj1 === obj2) return true;
+
+  // 如果两者之一为null或不是对象，则它们不相等
+  if (obj1 == null || typeof obj1 !== 'object' ||
+    obj2 == null || typeof obj2 !== 'object') {
+    return false;
+  }
+
+  // 获取obj1的所有属性名
+  const keys1 = Object.keys(obj1);
+  // 获取obj2的所有属性名
+  const keys2 = Object.keys(obj2);
+
+  // 如果属性数量不同，则对象不相等
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+
+  // 遍历所有属性，进行深度比较
+  for (let key of keys1) {
+    if (!keys2.includes(key) || !isObjectEqual(obj1[key], obj2[key])) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 

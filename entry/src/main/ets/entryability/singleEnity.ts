@@ -6,6 +6,7 @@ export class SingleEntity {
   private static instance: SingleEntity | null = null;
   private resourceManager: resmgr.ResourceManager;
   private tomatoSetting: TomatoTaskItem[];
+  private tomatoSettingOriginData: TomatoSettingInputKey;
 
   private constructor() {
     this.resourceManager = undefined;
@@ -23,21 +24,29 @@ export class SingleEntity {
     return this.tomatoSetting;
   }
 
+  setTomatoSettingOriginData(data: TomatoSettingInputKey) {
+    this.tomatoSettingOriginData = data;
+  }
+
+  getTomatoSettingOriginData() {
+    return this.tomatoSettingOriginData;
+  }
+
   setTomatoSetting(task: TomatoSettingInputKey) {
     const allTask: TomatoTaskItem[] = [];
     const fillTask: string[] = new Array(task.count).fill('');
 
     fillTask.forEach((_: string, index: number) => {
       allTask.push({
-        minute: task.every_time_len,
+        minute: Number(task.every_time_len),
         type: TomatoTaskType.PROCESS,
-        tomato_current: index + 1
+        tomato_current: index + 1,
       })
       if (index !== fillTask.length - 1) {
         allTask.push({
-          minute: task.rest_time_len,
+          minute: Number(task.rest_time_len),
           type: TomatoTaskType.REST,
-          tomato_current: index + 1
+          tomato_current: index + 1,
         })
       }
     });

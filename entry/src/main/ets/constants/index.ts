@@ -111,12 +111,17 @@ export const weekKeyMap = {
 
 export const period_types_map =  ['日目标', '周目标', '月目标', '年目标', '永久目标'];
 
-export const music_config = ['白噪音', '海边', '山上清风'];
+export const music_config = [
+  { str: "海边", id: 1, src: "test1.mp3" },
+  { str: "山上清风", id: 2, src: "test2.mp3" },
+  { str: "溪流", id: 3, src: "test3.mp3" },
+  { str: "鸟鸣", id: 4, src: "test4.mp3" },
+];
 
 export enum punch_event_name {
   PUNCH_IN_ALL_DATA = "punch_in_all_data",
   PUNCH_IN_DAILY = "punch_in_daily_",
-  RECORD_ALL = "record_all"
+  RECORD_ALL = "focus_record_"
 };
 
 
@@ -137,6 +142,8 @@ export enum EventCode {
   "DELETE_ACTION" = 1,
   "CLOSE_OTHER_RUNNING_CLOCK" = 2,
   "TOMATO_SETTING_DATA" = 3,
+  "REFRESH_RECORD" = 4,
+  "PLAY_AUDIO" = 5,
 }
 
 
@@ -145,4 +152,17 @@ export const TomatoDefaultSetting = {
   every_time_len: 5,
   rest_time_len: 2,
   auto_to_next: true
+}
+
+export const OneMinute = 60;
+
+export const ChangeScale = 99;
+
+export enum AudioEvent {
+  PLAY = 1,
+  PAUSE = 2,
+}
+
+export type AudioEventParams = {
+   event: AudioEvent
 }

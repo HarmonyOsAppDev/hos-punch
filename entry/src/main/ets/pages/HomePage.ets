@@ -65,7 +65,7 @@ export struct HomePage {
     try {
       const selectDateStr = `${this.currentDate.year}-${this.currentDate.month}-${this.currentDate.day}`;
       const putKey = `${punch_event_name.PUNCH_IN_DAILY}${selectDateStr}}`;
-      const currentData = await DatabaseManager.getCurrentDatePunchInAllData(putKey);
+      const currentData = await DatabaseManager.getCurrentAllDataByKey<PersonalPunchInRecord>(putKey);
       this.currentDatePunchInData = currentData;
     } catch (err) {
       console.info('Invoke pushUrl succeeded.');
@@ -171,7 +171,7 @@ export struct HomePage {
     try {
       const selectDateStr = `${this.currentDate.year}-${this.currentDate.month}-${this.currentDate.day}`;
       const putKey = `${punch_event_name.PUNCH_IN_DAILY}${selectDateStr}}`;
-      const currentDatePunchInList = await DatabaseManager.getCurrentDatePunchInAllData(putKey);
+      const currentDatePunchInList = await DatabaseManager.getCurrentAllDataByKey<PersonalPunchInRecord>(putKey);
       const systemTime = await systemDateTime.getCurrentTime(false);
       if (selectDateStr !== getYMD(systemTime).dateStr) {
         showDialog("打卡失败", "未到可打卡时间 ㅤ    ㅤ    ");

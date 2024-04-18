@@ -29,11 +29,12 @@ export type TimeConfigType = {
 }
 
 export type TimeRecordType = {
-    id: number,
+    id: string,
     title: string,
     type: FocusSelectType,
     createTime: number,
-    focusTime: number,
+    focusTime: string,
+    ownerKey: string,
 }
 
 export enum CycleType {
@@ -45,6 +46,8 @@ export enum TaskStatus {
     "NORMAL" = 1,
     "END" = 2,
 }
+
+export type ErrorType =  { code: number, message: string }
 
 // 打卡任务类型
 export type NewTaskType = {
@@ -113,12 +116,10 @@ export type TargetPageType = {
     [SelectEnum.ALL]:  NewTaskType[],
 }
 
-export type entryType = {
-    key: string;
-    value: {
-        type: distributedKVStore.ValueType;
-        value: string;
-    };
+export type MusicRepoType = {
+    str: string;
+    id: number;
+    src: string;
 }
 
 export type PunchDaysType = {
@@ -129,6 +130,7 @@ export enum CountStatusType {
     "UN_START" = 1,
     "IN_PROCESS" = 2,
     "IN_STOP" = 3,
+    "IN_PAUSE" = 4,
 }
 
 export type RunningClockType = {

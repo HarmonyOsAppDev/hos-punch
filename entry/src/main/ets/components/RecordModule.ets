@@ -1,10 +1,33 @@
-import { activeConfig, ColorConfig } from '../constants';
+import { activeConfig, ColorConfig, EventCode } from '../constants';
+import DatabaseManager from '../services/DatabaseManager';
+import { TimeRecordType } from '../types';
+import { getYMD } from '../utils/helper';
+import emitter from '@ohos.events.emitter';
 
 @Component
 export struct RecordModule {
   @State fakeArr: string[] = new Array(10).fill('1');
+  @State records: TimeRecordType[] = [];
 
-  openDeleteModal() {
+  aboutToAppear(): void {
+    this.getRecordInData();
+
+    emitter.on({eventId: EventCode.REFRESH_RECORD}, () => {
+        this.getRecordInData();
+    });
+  }
+
+  aboutToDisappear(): void {
+    emitter.off(EventCode.REFRESH_RECORD);
+  }
+
+  // 获取当前对应的打卡
+  async getRecordInData() {
+    const allPunchInData = await DatabaseManager.getAllFocusRecord();
+    this.records = allPunchInData;
+  }
+
+  openDeleteModal(item: TimeRecordType) {
     AlertDialog.show(
       {
         title: '提醒',
@@ -24,9 +47,9 @@ export struct RecordModule {
           defaultFocus: true,
           style: DialogButtonStyle.HIGHLIGHT,
           backgroundColor: ColorConfig.ERROR_COLOR,
-          value: '保存',
+          value: '删除',
           action: () => {
-            console.error("hello")
+            this.deleteDispatch(item);
           }
         },
         cancel: () => {
@@ -36,16 +59,21 @@ export struct RecordModule {
     )
   }
 
-  deleteAction() {
-    this.openDeleteModal();
+  async deleteDispatch(data: TimeRecordType) {
+    const key = data.ownerKey;
+    const allData = await DatabaseManager.getCurrentAllDataByKey<TimeRecordType>(key);
+    const temp = allData.filter(item => item.id !== data?.id);
+    await DatabaseManager.set(key, JSON.stringify(temp));
+    this.getRecordInData();
   }
+
 
   build() {
     Column() {
       Row() {
-        if (this.fakeArr.length) {
+        if (this.records.length) {
           List() {
-            ForEach(this.fakeArr, (item: string, idx: number) => {
+            ForEach(this.records, (item: TimeRecordType, idx: number) => {
               ListItem() {
                 Row() {
                   Row() {
@@ -53,28 +81,26 @@ export struct RecordModule {
                       Column() {
                         Image($r("app.media.tabicon_zhongcanchaocai")).width(45).height(45)
                       }
-
                       Column() {
-                        Text("劳烦广大旅客将考虑到是否快乐的实力开发商的洛克菲勒宽松短款礼服")
-                          .fontSize(18)
+                        Text(item.title)
+                          .fontSize(16)
                           .fontWeight(600)
                           .maxLines(1)
                           .margin({ bottom: 5 })
-                          .textOverflow({ overflow: TextOverflow.Clip })
 
                         Row() {
-                          Text(`3244秒`).fontColor(activeConfig.normal).fontSize(12)
+                          Text(`${item.focusTime.toString()}秒`).fontColor(activeConfig.normal).fontSize(12)
                           Divider().vertical(true).height(12).color('#182431').opacity(0.6).margin({ left: 8, right: 8 })
-                          Text(`2024-03-15 15:43`).fontColor(activeConfig.normal).fontSize(12)
+                          Text(getYMD(item.createTime).dateStrHHMM).fontColor(activeConfig.normal).fontSize(12)
                         }
-                      }.alignItems(HorizontalAlign.Start).margin({ left: 10 }).width("65%")
+                      }.alignItems(HorizontalAlign.Start).margin({ left: 10 }).width("75%")
                     }
 
 
                     Column() {
                       Image($r("app.media.delete")).width(25).height(25)
                     }.onClick(() => {
-                       this.openDeleteModal();
+                       this.openDeleteModal(item);
                     })
                   }
                   .justifyContent(FlexAlign.SpaceBetween)

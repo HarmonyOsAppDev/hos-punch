@@ -1,8 +1,9 @@
 
 import { punch_event_name } from '../constants';
-import { NewTaskType, PersonalPunchInRecord } from '../types';
+import { NewTaskType, PersonalPunchInRecord, TimeRecordType } from '../types';
 import distributedKVStore from '@ohos.data.distributedKVStore';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { getYMD } from '../utils/helper';
 
 /*
  * 将来如果appstorage有改变存储介质和api可以统一管理
@@ -133,7 +134,7 @@ class DatabaseManager {
     }
   }
 
-  async getCurrentDatePunchInAllData(key): Promise<PersonalPunchInRecord[] > {
+  async getCurrentAllDataByKey<T>(key): Promise<T[]> {
     try {
       const getPunchInList = await this.get(key);
       if (getPunchInList !== '') {
@@ -144,6 +145,43 @@ class DatabaseManager {
     } catch (err) {
       console.error(`Failed to getCurrentDatePunchInAllData. Code:${err.code},message:${err.message}`);
       return [];
+    }
+  }
+
+  async getAllFocusRecord() {
+    try {
+      const getStore = await this.getStoreInstance();
+      const getList= await getStore.getEntries(punch_event_name.RECORD_ALL);
+
+      if (getList.length) {
+          let newArr = [];
+
+          getList.forEach((cur) => {
+            const dataStr = cur.value?.value.toString();
+            const item: TimeRecordType[] = JSON.parse(dataStr || "{}");
+            newArr =  newArr.concat(item);
+          })
+          return newArr;
+      } else {
+        return [];
+      }
+    } catch (err) {
+      console.error(`Failed to getAllFocusRecord. Code:${err.code},message:${err.message}`);
+      return [];
+    }
+  }
+
+  async setRecord(data: TimeRecordType) {
+    try {
+      const titleStr = getYMD().dateStr;
+      let kvStore = globalThis.kvStore;
+      if (!globalThis.kvStore) {
+        kvStore = await this.getKvStore();
+      };
+      const key = `${punch_event_name.RECORD_ALL}${titleStr}`;
+      await kvStore.put(key, data);
+    } catch (err) {
+      console.error(`Failed to put data. Code:${err.code},message:${err.message}`);
     }
   }
 }

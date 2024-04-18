@@ -1,8 +1,11 @@
-import { activeConfig, ColorConfig, EventCode, timeConfig } from '../constants';
+import { activeConfig, AudioEvent, ColorConfig, EventCode, punch_event_name, timeConfig } from '../constants';
 import { SingleEntity } from '../entryability/singleEnity';
-import { CountStatusType, FocusSelectType, TimeConfigType } from '../types';
-import { TypeDialogManager } from './Dialog';
+import { CountStatusType, FocusSelectType, TimeConfigType, TimeRecordType } from '../types';
+import { showDialog, TypeDialogManager } from './Dialog';
 import emitter from '@ohos.events.emitter';
+import { getYMD } from '../utils/helper';
+import DatabaseManager from '../services/DatabaseManager';
+import { generateNanoId } from '../utils/generate';
 
 @Component
 export struct CountDownModule {
@@ -78,7 +81,8 @@ export struct CountDownModule {
   }
 
 
-  openDeleteModal() {
+  openDeleteModal(second: number) {
+      const titleStr = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()} ${new Date().getHours()}: ${new Date().getMinutes()}`
       AlertDialog.show(
         {
           title: '提醒',
@@ -100,7 +104,7 @@ export struct CountDownModule {
             backgroundColor: ColorConfig.NORMAL_COLOR,
             value: '保存',
             action: () => {
-             console.error("hello")
+               this.saveToDataBase(`倒计时 ${titleStr}`, second);
             }
           },
           cancel: () => {
@@ -110,9 +114,43 @@ export struct CountDownModule {
       )
   }
 
+  async saveToDataBase(str: string, countTime: number) {
+    const titleStr = getYMD().dateStr;
+    const key = `${punch_event_name.RECORD_ALL}${titleStr}`;
+
+    const currentRecordList = await DatabaseManager.getCurrentAllDataByKey<TimeRecordType>(key);
+
+    const generateId = await generateNanoId(32);
+
+    const newData: TimeRecordType = {
+      id: generateId,
+      title: str,
+      type: FocusSelectType.NEGATIVE_COUNT,
+      createTime: new Date().getTime(),
+      focusTime: countTime.toString(),
+      ownerKey: key
+    }
+
+    const insertData = currentRecordList.concat(newData);
+
+    await DatabaseManager.set(key,  JSON.stringify(insertData));
+
+    showDialog("提示", `已成功保存当前专注记录 ㅤ    ㅤ     ㅤ`);
+
+    this.sendMessageToInfrom();
+  }
+
+
+  sendMessageToInfrom() {
+    emitter.emit({eventId: EventCode.REFRESH_RECORD});
+  }
+
   resetTimer() {
     this.textTimerController.reset();
     this.countStatus = CountStatusType.UN_START;
+    emitter.emit({ eventId: EventCode.PLAY_AUDIO }, { data : {
+      event: AudioEvent.PAUSE
+    }})
   }
 
   startTimer() {
@@ -121,11 +159,19 @@ export struct CountDownModule {
     emitter.emit({eventId: EventCode.CLOSE_OTHER_RUNNING_CLOCK}, { data : {
       timeType: FocusSelectType.NEGATIVE_COUNT
     }})
+
+    emitter.emit({ eventId: EventCode.PLAY_AUDIO }, { data : {
+      event: AudioEvent.PLAY
+    }})
   }
 
   pauseTimer() {
     this.textTimerController.pause();
     this.countStatus = CountStatusType.IN_STOP;
+
+    emitter.emit({ eventId: EventCode.PLAY_AUDIO }, { data : {
+      event: AudioEvent.PAUSE
+    }})
   }
 
 
@@ -169,7 +215,7 @@ export struct CountDownModule {
             .onTimer((utc: number, elapsedTime: number) => {
               if ((elapsedTime * 1000) === this.targetTime) {
                   this.resetTimer();
-                  this.openDeleteModal();
+                  this.openDeleteModal(elapsedTime);
               }
             })
 

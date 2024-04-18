@@ -1,4 +1,5 @@
 import { activeConfig, jiTang } from '../constants'
+import { TomatoSetting } from '../pages/TomatoSetting'
 
 export const showDialog = (title: string, message: string) => {
   AlertDialog.show(
@@ -48,6 +49,8 @@ export struct PosterDialog {
   }
 }
 
+
+
 @CustomDialog
 export struct TypeDialogManager {
   controller?: CustomDialogController
@@ -70,7 +73,7 @@ export struct TypeDialogManager {
   build() {
     Column() {
       Text(this.title || '提示').fontSize(18).margin({ top: 15, bottom: 20 }).fontWeight(600)
-      TextInput({ text: String(this.typeStr), placeholder: '输入事件名称' }).width("90%").onChange((v) => this.typeStr = v).margin({bottom: 10, top: 10}).type(this.inputType)
+      TextInput({ text: String(this.typeStr), placeholder: `输入${this.title}` }).width("90%").onChange((v) => this.typeStr = v).margin({bottom: 10, top: 10}).type(this.inputType)
       Flex({ justifyContent: FlexAlign.SpaceAround }) {
         Button('取消')
           .onClick(() => {

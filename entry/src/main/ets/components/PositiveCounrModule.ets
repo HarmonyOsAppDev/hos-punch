@@ -1,8 +1,10 @@
-import { activeConfig, ColorConfig, EventCode, punch_event_name, timeConfig } from '../constants';
+import { activeConfig, AudioEvent, ColorConfig, EventCode, punch_event_name, timeConfig } from '../constants';
 import DatabaseManager from '../services/DatabaseManager';
-import { CountStatusType, FocusSelectType, TimeConfigType } from '../types';
+import { CountStatusType, FocusSelectType, TimeConfigType, TimeRecordType } from '../types';
 import { showDialog, TypeDialogManager } from './Dialog';
 import emitter from '@ohos.events.emitter';
+import { generateNanoId } from '../utils/generate';
+import { getYMD } from '../utils/helper';
 
 @Component
 export struct PositiveCounrModule {
@@ -15,13 +17,13 @@ export struct PositiveCounrModule {
   private DialogInstance: CustomDialogController | undefined = undefined;
 
   createTypeDialog() {
-    const titleStr = `${new Date().getFullYear()}/${new Date().getMonth() + 1}/${new Date().getDate()}/${new Date().getHours()}/${new Date().getMinutes()}/${new Date().getSeconds()}`
+    const titleStr = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()} ${new Date().getHours()}: ${new Date().getMinutes()}`
     this.DialogInstance = new CustomDialogController({
       builder: TypeDialogManager({
         cancel: this.closeDialog.bind(this),
         confirm: this.dialogAccept.bind(this),
         title: "输入保存的专注标题",
-        oldVal: `默认记录-${titleStr}`,
+        oldVal: `正计时-${titleStr}`,
         inputType: InputType.Normal
       }),
       alignment: DialogAlignment.Center
@@ -31,15 +33,41 @@ export struct PositiveCounrModule {
 
   dialogAccept(str: string) {
     this.DialogInstance?.close();
-    this.openDeleteModal(str);
+    this.openSaveModal(str);
   }
 
   closeDialog() {
     this.DialogInstance?.close();
   }
 
-  openDeleteModal(str: string) {
-     showDialog("提示", `已成功保存当前专注记录 ㅤ    ㅤ     ㅤ`);
+  async openSaveModal(str: string) {
+    const titleStr = getYMD().dateStr;
+    const key = `${punch_event_name.RECORD_ALL}${titleStr}`;
+
+    const currentRecordList = await DatabaseManager.getCurrentAllDataByKey<TimeRecordType>(key);
+
+    const generateId = await generateNanoId(32);
+
+    const newData: TimeRecordType = {
+      id: generateId,
+      title: str,
+      type: FocusSelectType.POSITIVE_COUNT,
+      createTime: new Date().getTime(),
+      focusTime: this.countTime.toString(),
+      ownerKey: key
+    }
+
+    const insertData = currentRecordList.concat(newData);
+
+    await DatabaseManager.set(key,  JSON.stringify(insertData));
+
+    showDialog("提示", `已成功保存当前专注记录 ㅤ    ㅤ     ㅤ`);
+
+    this.sendMessageToInfrom();
+  }
+
+  sendMessageToInfrom() {
+    emitter.emit({eventId: EventCode.REFRESH_RECORD});
   }
 
   aboutToAppear(): void {
@@ -53,6 +81,9 @@ export struct PositiveCounrModule {
   resetTimer() {
     this.textTimerController.reset();
     this.countStatus = CountStatusType.UN_START;
+    emitter.emit({ eventId: EventCode.PLAY_AUDIO }, { data : {
+      event: AudioEvent.PAUSE
+    }})
   }
 
   build() {
@@ -77,6 +108,10 @@ export struct PositiveCounrModule {
                 emitter.emit({eventId: EventCode.CLOSE_OTHER_RUNNING_CLOCK}, { data : {
                   timeType: FocusSelectType.POSITIVE_COUNT
                 }})
+
+                emitter.emit({ eventId: EventCode.PLAY_AUDIO }, { data : {
+                  event: AudioEvent.PLAY
+                }})
               })
             }
 
@@ -91,6 +126,9 @@ export struct PositiveCounrModule {
                   .onClick(() => {
                     this.textTimerController.pause();
                     this.countStatus = CountStatusType.IN_STOP;
+                    emitter.emit({ eventId: EventCode.PLAY_AUDIO }, { data : {
+                      event: AudioEvent.PAUSE
+                    }})
                   })
 
                 Button("保存")
