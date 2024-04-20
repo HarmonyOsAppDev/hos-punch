@@ -6,6 +6,7 @@ import emitter from '@ohos.events.emitter';
 import { getYMD } from '../utils/helper';
 import DatabaseManager from '../services/DatabaseManager';
 import { generateNanoId } from '../utils/generate';
+import { Icon_list } from '../statics';
 
 @Component
 export struct CountDownModule {
@@ -219,7 +220,7 @@ export struct CountDownModule {
               }
             })
 
-          Image($r("app.media.tabicon_xianhualvzhi")).width(60).height(60).margin({top: 30})
+          Image($r(Icon_list[8].url)).width(60).height(60).margin({top: 30})
 
           Row() {
             if ([CountStatusType.UN_START, CountStatusType.IN_STOP].includes(this.countStatus)) {

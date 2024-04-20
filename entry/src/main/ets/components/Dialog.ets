@@ -1,5 +1,6 @@
 import { activeConfig, jiTang } from '../constants'
 import { TomatoSetting } from '../pages/TomatoSetting'
+import { Icon_list } from '../statics'
 import { getYMD } from '../utils/helper'
 
 export const showDialog = (title: string, message: string) => {
@@ -33,13 +34,14 @@ export struct PosterDialog {
   controller?: CustomDialogController
   title: string = '';
   desc: string = '';
+  avatar: string = '';
 
   build() {
     Column() {
 
           Row() {
             Column() {
-              Image($r("app.media.tabicon_pijiujingniang")).width(60).height(60).margin({left: -4})
+              Image($r(this.avatar)).width(60).height(60).margin({left: -4})
               Text(getYMD().dateStr).fontSize(16).fontColor(activeConfig.active).fontWeight(400).opacity(0.4).margin({top: 5})
             }.alignItems(HorizontalAlign.Start)
 

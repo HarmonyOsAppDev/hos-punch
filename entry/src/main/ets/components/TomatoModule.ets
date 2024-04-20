@@ -14,6 +14,7 @@ import router from '@ohos.router';
 import { getYMD } from '../utils/helper';
 import DatabaseManager from '../services/DatabaseManager';
 import { generateNanoId } from '../utils/generate';
+import { Icon_list } from '../statics';
 
 @Component
 export struct TomatoModule {
@@ -235,7 +236,7 @@ export struct TomatoModule {
               }
             })
 
-          Image($r("app.media.tabicon_xianhualvzhi")).width(60).height(60).margin({ top: 30 })
+          Image($r(Icon_list[8].url)).width(60).height(60).margin({ top: 30 })
 
           if (this.getTomatoTasks()?.[this.tomatoTaskIndex].type === TomatoTaskType.REST) {
             Text(`正在休息～`).fontSize(16).fontColor(ColorConfig.THEME_ORANGE_COLOR).margin({ top: 2});

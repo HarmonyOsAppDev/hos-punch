@@ -3,6 +3,7 @@ import DatabaseManager from '../services/DatabaseManager';
 import { TimeRecordType } from '../types';
 import { getYMD } from '../utils/helper';
 import emitter from '@ohos.events.emitter';
+import { Icon_list } from '../statics';
 
 @Component
 export struct RecordModule {
@@ -79,7 +80,7 @@ export struct RecordModule {
                   Row() {
                     Row() {
                       Column() {
-                        Image($r("app.media.tabicon_zhongcanchaocai")).width(45).height(45)
+                        Image($r(Icon_list[8].url)).width(45).height(45)
                       }
                       Column() {
                         Text(item.title)

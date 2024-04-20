@@ -5,6 +5,7 @@ import { showDialog, TypeDialogManager } from './Dialog';
 import emitter from '@ohos.events.emitter';
 import { generateNanoId } from '../utils/generate';
 import { getYMD } from '../utils/helper';
+import { Icon_list } from '../statics';
 
 @Component
 export struct PositiveCounrModule {
@@ -97,7 +98,7 @@ export struct PositiveCounrModule {
               this.countTime = elapsedTime;
             })
 
-          Image($r("app.media.tabicon_xianhualvzhi")).width(60).height(60).margin({top: 30})
+          Image($r(Icon_list[8].url)).width(60).height(60).margin({top: 30})
 
 
           Row() {

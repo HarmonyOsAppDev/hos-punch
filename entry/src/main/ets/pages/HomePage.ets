@@ -49,9 +49,11 @@ export struct HomePage {
     emitter.off(EventCode.DELETE_ACTION);
   }
 
-  createTypeDialog() {
+  createTypeDialog(avatar: string) {
     this.DialogInstance = new CustomDialogController({
-      builder: PosterDialog({}),
+      builder: PosterDialog({
+        avatar,
+      }),
       alignment: DialogAlignment.Center,
       customStyle: true,
     });
@@ -220,7 +222,7 @@ export struct HomePage {
       await this.getPunchInData();
 
       if (item.allow_popcard) {
-        this.createTypeDialog();
+        this.createTypeDialog(item.icon);
       }
 
       if (this.isNeedAudio) {
