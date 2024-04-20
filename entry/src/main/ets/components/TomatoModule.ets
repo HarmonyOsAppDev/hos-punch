@@ -64,7 +64,7 @@ export struct TomatoModule {
 
   dialogAccept(str: string) {
     this.DialogInstance?.close();
-    this.openDeleteModal(str);
+    this.openSaveModal(str);
   }
 
   closeDialog() {
@@ -76,7 +76,7 @@ export struct TomatoModule {
     return SingleEntity.getInstance().getTomatoSetting(this.tomatoDefaultSetting);
   }
 
-  async openDeleteModal(str: string) {
+  async openSaveModal(str: string) {
     const titleStr = getYMD().dateStr;
     const key = `${punch_event_name.RECORD_ALL}${titleStr}`;
 
@@ -100,7 +100,6 @@ export struct TomatoModule {
         return prev;
       }, 0);
     }
-
 
       // 暂时先写死，非常具体的统计口径到时候再写
     const countTime = `共${this.getTomatoTasks()?.[this.tomatoTaskIndex].tomato_current}次，共${resultTime}`;
@@ -158,6 +157,7 @@ export struct TomatoModule {
   startTomato() {
     this.textTimerController.start();
     // 设置状态
+    this.isEndCycle = false;
     this.countStatus = CountStatusType.IN_PROCESS;
     // 发消息关掉其他倒计时(应该没这个需求需要2-3个倒计时)
     emitter.emit({ eventId: EventCode.CLOSE_OTHER_RUNNING_CLOCK }, {
@@ -168,6 +168,16 @@ export struct TomatoModule {
     emitter.emit({ eventId: EventCode.PLAY_AUDIO }, { data : {
       event: AudioEvent.PLAY
     }})
+  }
+
+
+  playRestAudio() {
+    emitter.emit({ eventId: EventCode.PLAY_AUDIO }, { data : {
+      event: AudioEvent.PAUSE
+    }});
+    setTimeout(() => {
+      emitter.emit({ eventId: EventCode.PLAY_REMIND_AUDIO });
+    }, 30)
   }
 
   build() {
@@ -201,10 +211,9 @@ export struct TomatoModule {
                  // 结束，开启新一段
                  const tmpIndex = this.tomatoTaskIndex + 1;
 
-                 if (this.getTomatoTasks()?.[tmpIndex] && this.getTomatoTasks()?.[tmpIndex].type === TomatoTaskType.REST) {
-                    // 下一阶段是休息时间提醒，这里可以播放进入休息提醒声音，叮一下
-                   console.error("进入休息")
-                 }
+                 // if (this.getTomatoTasks()?.[tmpIndex] && this.getTomatoTasks()?.[tmpIndex].type === TomatoTaskType.REST) {
+                 //   console.error("进入休息")
+                 // }
                 //
                 // 如果不是自动进入下一个番茄钟，这里阻断一下
                 if (this.getTomatoTasks()?.[this.tomatoTaskIndex] && this.getTomatoTasks()?.[this.tomatoTaskIndex].type === TomatoTaskType.REST && !this.tomatoDefaultSetting.auto_to_next) {
@@ -213,6 +222,7 @@ export struct TomatoModule {
 
                 if (this.getTomatoTasks()?.[tmpIndex]) {
                   this.resetTimer();
+                  this.playRestAudio();
                   this.tomatoTaskIndex += 1;
                   setTimeout(() => {
                     this.startTomato();
@@ -221,7 +231,6 @@ export struct TomatoModule {
                   this.isEndCycle = true;
                   this.resetTimerAction();
                   this.createTypeDialog();
-                  this.isEndCycle = false;
                 }
               }
             })

@@ -1,5 +1,6 @@
 import { activeConfig, jiTang } from '../constants'
 import { TomatoSetting } from '../pages/TomatoSetting'
+import { getYMD } from '../utils/helper'
 
 export const showDialog = (title: string, message: string) => {
   AlertDialog.show(
@@ -35,14 +36,29 @@ export struct PosterDialog {
 
   build() {
     Column() {
-          Image($r("app.media.tabicon_pijiujingniang")).width(100).height(100).margin({bottom: 15})
-          Text("打卡成功，已坚持了1天").fontSize(18).fontColor(activeConfig.active).fontWeight(500).opacity(0.5)
-          Text(`“${jiTang[Math.floor(Math.random() * 9)]}”`).fontSize(18).fontColor(activeConfig.active).fontWeight(500).opacity(0.5).margin({top: 10})
-    }.width("70%").height("40%").linearGradient({
+
+          Row() {
+            Column() {
+              Image($r("app.media.tabicon_pijiujingniang")).width(60).height(60).margin({left: -4})
+              Text(getYMD().dateStr).fontSize(16).fontColor(activeConfig.active).fontWeight(400).opacity(0.4).margin({top: 5})
+            }.alignItems(HorizontalAlign.Start)
+
+            Column() {}.width(25)
+          }.justifyContent(FlexAlign.SpaceBetween).width("100%")
+
+
+          Column() {
+            Text("打卡成功，又坚持了1天").fontSize(17).fontColor(activeConfig.active).fontWeight(500).opacity(0.4)
+            Text(`“${jiTang[Math.floor(Math.random() * 9)]}”`).fontSize(14).fontColor(activeConfig.active).fontWeight(400).opacity(0.4).margin({top: 15})
+          }.margin({top: 50}).alignItems(HorizontalAlign.Start)
+
+    }.width("65%").height("36%")
+    .linearGradient({
       direction: GradientDirection.Bottom, // 渐变方向
       repeating: false, // 渐变颜色是否重复
       colors: [["#f2efe0", 0.0], ["#f8f2cf", 0.5], ["#faf8f0", 0.8]] // 数组末尾元素占比小于1时满足重复着色效果
-    }).border({width: 12, color: "#ffffff", radius: 20}).shadow({
+    })
+    .border({width: 12, color: "#ffffff", radius: 20}).shadow({
       radius: 15,
       color: "#d4d4d4"
     }).padding({left: 15, right: 15, top: 15 })

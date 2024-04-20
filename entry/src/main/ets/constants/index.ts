@@ -112,10 +112,8 @@ export const weekKeyMap = {
 export const period_types_map =  ['日目标', '周目标', '月目标', '年目标', '永久目标'];
 
 export const music_config = [
-  { str: "海边", id: 1, src: "test1.mp3" },
-  { str: "山上清风", id: 2, src: "test2.mp3" },
-  { str: "溪流", id: 3, src: "test3.mp3" },
-  { str: "鸟鸣", id: 4, src: "test4.mp3" },
+  { str: "柔和海浪", id: 1, src: "ld.mp3" },
+  { str: "海滩波浪", id: 2, src: "ht.mp3" },
 ];
 
 export const remindAudio = "ding.mp3"

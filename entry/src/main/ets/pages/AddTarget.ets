@@ -288,7 +288,7 @@ export struct AddTarget {
             }
 
             Row() {
-              Text(String(this.formData.punch_count))
+              Text(String(this.formData.punch_count) || '1')
                 .fontSize(18)
                 .maxLines(1)
                 .width("50%")

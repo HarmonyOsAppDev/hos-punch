@@ -117,7 +117,7 @@ export struct TomatoSetting {
           Text("番茄数量").fontSize(18)
         }
         Row() {
-          Text(String(this.formData.count))
+          Text( this.formData.count > 0 ? String(this.formData.count) : '1')
             .fontSize(18)
             .maxLines(1)
             .width("50%")
@@ -149,7 +149,7 @@ export struct TomatoSetting {
       }
 
       Row() {
-        Text(String(this.formData.every_time_len))
+        Text(this.formData.every_time_len > 0 ? String(this.formData.every_time_len) : '1')
           .fontSize(18)
           .maxLines(1)
           .width("45%")
@@ -183,7 +183,7 @@ export struct TomatoSetting {
         }
 
         Row() {
-          Text(String(this.formData.rest_time_len))
+          Text(this.formData.rest_time_len > 0 ? String(this.formData.rest_time_len) : '1')
             .fontSize(18)
             .maxLines(1)
             .width("50%")

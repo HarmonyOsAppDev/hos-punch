@@ -4,6 +4,7 @@ import common from '@ohos.app.ability.common';
 import { activeConfig, AudioEvent, AudioEventParams, EventCode, music_config } from '../constants';
 import { CountStatusType, MusicRepoType } from '../types';
 import emitter from '@ohos.events.emitter';
+import audio from '@ohos.multimedia.audio';
 
 
 @Component
@@ -62,6 +63,7 @@ export struct AudioPlayer {
           break;
         case 'prepared': // prepare调用成功后上报该状态机
           console.info('AVPlayer state prepared called.');
+          avPlayer.audioInterruptMode = audio.InterruptMode.SHARE_MODE;
           avPlayer.play(); // 调用播放接口开始播放
           if (this.avPlayer) {
             this.avPlayer.loop = true;
@@ -123,6 +125,7 @@ export struct AudioPlayer {
       this.isSeek = false; // 支持seek操作
       // 为fdSrc赋值触发initialized状态机上报
       this.avPlayer.fdSrc = avFileDescriptor;
+
       // 为fdSrc赋值触发initialized状态机上报
     } catch (e) {
       console.error(`${JSON.stringify(e)}`)
