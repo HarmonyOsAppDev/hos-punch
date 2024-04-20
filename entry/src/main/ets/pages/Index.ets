@@ -1,3 +1,4 @@
+import { AudioRemindPlayer } from '../components/AudioRemindPlayer';
 import { TAB_MENU } from '../constants';
 import { BottomText, menu_index } from '../statics/index';
 import { FocusPage } from './FocusPage';
@@ -42,6 +43,7 @@ struct Index {
       }.margin({bottom: 5}).onChange((index) => {
         this.currentIndex = index
       })
+      AudioRemindPlayer()
     }.height('100%')
   }
 }

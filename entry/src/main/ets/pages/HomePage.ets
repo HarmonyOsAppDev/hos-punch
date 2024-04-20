@@ -1,5 +1,5 @@
-import { activeConfig, ColorConfig, EventCode, jiTang, punch_event_name } from '../constants'
-import { CycleType, NewTaskType, PersonalPunchInRecord, PunchDaysType, SelectDateType } from '../types'
+import { activeConfig, AudioEvent, ColorConfig, EventCode, jiTang, punch_event_name } from '../constants'
+import { CycleType, NewTaskType, PersonalPunchInRecord, PunchDaysType, SelectDateType, SettingType } from '../types'
 import { getDaysOfMonthWithFirstDayOfWeek, getYMD } from '../utils/helper'
 import router from '@ohos.router'
 import DatabaseManager from '../services/DatabaseManager'
@@ -19,15 +19,25 @@ export struct HomePage {
   }
   @State allPunchInData: NewTaskType[] = [];
   @State currentDatePunchInData: PersonalPunchInRecord[] = [];
+  private isNeedAudio: boolean = false;
   selectedDate: Date = new Date();
   private scrollerForList: Scroller = new Scroller()
   private DialogInstance: CustomDialogController | undefined = undefined;
 
   async aboutToAppear() {
     this.initData();
+    this.getPunchAuidoSetting();
     emitter.on({eventId: EventCode.DELETE_ACTION}, () => {
       this.initData();
     })
+  }
+
+  async getPunchAuidoSetting() {
+    const data = await DatabaseManager.get(punch_event_name.SETTING);
+    if (data !== '') {
+      const params: SettingType = JSON.parse(data || "{}");
+      this.isNeedAudio = params?.punchInAudio;
+    }
   }
 
   async initData() {
@@ -213,9 +223,22 @@ export struct HomePage {
         this.createTypeDialog();
       }
 
+      if (this.isNeedAudio) {
+        this.playPunchInAudio();
+      }
+
     } catch (err) {
       showDialog("打卡失败", "发生错误！！！ ㅤ    ㅤ    ");
     }
+  }
+
+  playPunchInAudio() {
+    emitter.emit({ eventId: EventCode.PLAY_AUDIO }, { data : {
+      event: AudioEvent.PAUSE
+    }});
+    setTimeout(() => {
+      emitter.emit({ eventId: EventCode.PLAY_REMIND_AUDIO });
+    }, 30)
   }
 
   computeProcess(item: NewTaskType) {

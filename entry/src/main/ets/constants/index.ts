@@ -1,4 +1,4 @@
-import {  TargetTabType } from '../types'
+import { TargetTabType } from '../types'
 
 export enum TAB_MENU {
   "INDEX" = 0,
@@ -118,10 +118,13 @@ export const music_config = [
   { str: "鸟鸣", id: 4, src: "test4.mp3" },
 ];
 
+export const remindAudio = "ding.mp3"
+
 export enum punch_event_name {
   PUNCH_IN_ALL_DATA = "punch_in_all_data",
   PUNCH_IN_DAILY = "punch_in_daily_",
-  RECORD_ALL = "focus_record_"
+  RECORD_ALL = "focus_record_",
+  SETTING = "punchin_setting"
 };
 
 
@@ -144,6 +147,7 @@ export enum EventCode {
   "TOMATO_SETTING_DATA" = 3,
   "REFRESH_RECORD" = 4,
   "PLAY_AUDIO" = 5,
+  "PLAY_REMIND_AUDIO" = 6
 }
 
 
@@ -164,5 +168,5 @@ export enum AudioEvent {
 }
 
 export type AudioEventParams = {
-   event: AudioEvent
+   event: AudioEvent,
 }

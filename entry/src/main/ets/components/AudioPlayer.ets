@@ -15,24 +15,28 @@ export struct AudioPlayer {
   @State currentMusicIndex: number = 0;
   @State currentPlayStatus: CountStatusType = CountStatusType.UN_START;
 
-
   aboutToAppear(): void {
     emitter.on({eventId: EventCode.PLAY_AUDIO}, (params) => {
       const param = params.data as AudioEventParams;
-      if ( param.event === AudioEvent.PLAY) {
-        setTimeout(() => {
-          this.playAudio(this.musicRepo[this.currentMusicIndex]?.src);
-        }, 100)
+      if (param.event === AudioEvent.PLAY) {
+        this.avPlayer?.stop();
+        this.avPlayer = undefined;
+        this.playAudio(this.musicRepo[this.currentMusicIndex]?.src);
       }
 
       if ( param.event === AudioEvent.PAUSE) {
-        this.avPlayer?.stop();
+        this.pauseAudio();
       }
     })
   }
 
   aboutToDisappear(): void {
+    this.avPlayer = undefined;
     emitter.off(EventCode.PLAY_AUDIO)
+  }
+
+  pauseAudio() {
+    this.avPlayer?.stop();
   }
 
   setAVPlayerCallback(avPlayer: media.AVPlayer) {
@@ -143,7 +147,7 @@ export struct AudioPlayer {
         Row() {
           Row() {
             Row() {
-              Image($r("app.media.tabicon_shousifantuan")).width(60).height(60).borderRadius(50)
+              Image($r("app.media.music")).width(50).height(50).borderRadius(50).margin({left: 3, right: 5, top: 3, bottom: 3})
 
               Column() {
                 Text(this.musicRepo[this.currentMusicIndex]?.str).fontSize(16).fontWeight(400).fontColor(activeConfig.active)
@@ -155,10 +159,10 @@ export struct AudioPlayer {
             Row() {
 
               Image($r([CountStatusType.UN_START, CountStatusType.IN_PAUSE ].includes(this.currentPlayStatus) ? 'app.media.playBtn' : "app.media.pause")).width(25).height(25).opacity(0.6).onClick(() => {
-                if ([CountStatusType.UN_START, CountStatusType.IN_PAUSE ].includes(this.currentPlayStatus)) {
+                if ([CountStatusType.UN_START, CountStatusType.IN_PAUSE].includes(this.currentPlayStatus)) {
                   this.playAudio(this.musicRepo[this.currentMusicIndex]?.src);
                 } else {
-                  this.avPlayer?.stop();
+                  this.pauseAudio();
                 }
               })
 
@@ -168,7 +172,7 @@ export struct AudioPlayer {
                   range: this.musicRepo.map(item => item.str),
                   selected: this.currentMusicIndex,
                   onAccept: (value: TextPickerResult) => {
-                    this.avPlayer?.stop();
+                    this.pauseAudio();
                     this.currentMusicIndex = value.index as number;
 
                     if ([CountStatusType.IN_PROCESS].includes(this.currentPlayStatus)) {

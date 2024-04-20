@@ -1,9 +1,33 @@
 import router from '@ohos.router'
-import { ColorConfig } from '../constants'
+import { ColorConfig, punch_event_name } from '../constants'
+import { SettingType } from '../types';
+import DatabaseManager from '../services/DatabaseManager';
+import { getData } from '../services/SettingDataManager';
 
 @Entry
 @Component
 export struct SettingPage {
+  @State setting: SettingType|undefined = undefined;
+  private settingKey = punch_event_name.SETTING;
+
+  async aboutToAppear() {
+    const data = await DatabaseManager.get(this.settingKey);
+    if (data !== '') {
+      const params: SettingType = JSON.parse(data || "{}");
+      this.setting = params;
+    }
+  }
+
+  async punchData(val: boolean) {
+      const originData = this.setting;
+      const newData: SettingType = {
+        punchInAudio: val,
+      }
+      const data = getData<SettingType, SettingType>(originData, newData);
+      await DatabaseManager.set(this.settingKey, JSON.stringify(data));
+  }
+
+
   build() {
     Column() {
       Row() {
@@ -23,11 +47,11 @@ export struct SettingPage {
         }.alignItems(VerticalAlign.Center)
 
         Row() {
-          Toggle({ type: ToggleType.Switch, isOn: false })
+          Toggle({ type: ToggleType.Switch, isOn: this.setting?.punchInAudio ? true : false })
             .selectedColor(ColorConfig.THEME_ORANGE_COLOR)
             .switchPointColor('#FFFFFF')
             .onChange((isOn: boolean) => {
-              // this.isTop = isOn;
+              this.punchData(isOn);
             })
         }
       }.justifyContent(FlexAlign.SpaceBetween).padding({ bottom: 10, left: 15, right: 15, top: 10 }).width("90%").backgroundColor(ColorConfig.BOARD_BG_COLOR).borderRadius(15).margin({top: 20})

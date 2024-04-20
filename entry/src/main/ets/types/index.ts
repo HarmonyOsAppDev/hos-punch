@@ -157,3 +157,8 @@ export type TomatoTaskItem = {
     type: TomatoTaskType;
     tomato_current: number;
 }
+
+
+export type SettingType = {
+    punchInAudio: boolean
+}
