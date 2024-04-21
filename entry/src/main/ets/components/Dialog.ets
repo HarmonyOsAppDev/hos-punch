@@ -1,6 +1,4 @@
 import { activeConfig, jiTang } from '../constants'
-import { TomatoSetting } from '../pages/TomatoSetting'
-import { Icon_list } from '../statics'
 import { getYMD } from '../utils/helper'
 
 export const showDialog = (title: string, message: string) => {

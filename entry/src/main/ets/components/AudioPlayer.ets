@@ -5,7 +5,9 @@ import { activeConfig, AudioEvent, AudioEventParams, EventCode, music_config } f
 import { CountStatusType, MusicRepoType } from '../types';
 import emitter from '@ohos.events.emitter';
 import audio from '@ohos.multimedia.audio';
-
+import wantAgent, { WantAgent } from '@ohos.app.ability.wantAgent';
+import backgroundTaskManager from '@ohos.resourceschedule.backgroundTaskManager';
+import AVSessionManager from '@ohos.multimedia.avsession';
 
 @Component
 export struct AudioPlayer {
@@ -13,6 +15,8 @@ export struct AudioPlayer {
   private count: number = 0;
   private isSeek: boolean = true; // 用于区分模式是否支持seek操作
   private musicRepo: MusicRepoType[]  = music_config;
+  // 通过getContext方法，来获取page所在的UIAbility上下文。
+  private context: Context = getContext(this);
   @State currentMusicIndex: number = 0;
   @State currentPlayStatus: CountStatusType = CountStatusType.UN_START;
 
@@ -31,13 +35,92 @@ export struct AudioPlayer {
     })
   }
 
+  async createSession() {
+    let type: AVSessionManager.AVSessionType = 'audio';
+    let session = await AVSessionManager.createAVSession(this.context,'SESSION_NAME', type);
+
+
+    let metadata: AVSessionManager.AVMetadata = {
+      assetId: '0', // 由应用指定，用于标识应用媒体库里的媒体
+      title: this.musicRepo[this.currentMusicIndex]?.str,
+      artist: '纯音乐'
+    };
+
+    let playbackState: AVSessionManager.AVPlaybackState = {
+      state:AVSessionManager.PlaybackState.PLAYBACK_STATE_PAUSE,
+      loopMode: AVSessionManager.LoopMode.LOOP_MODE_SINGLE,
+      isFavorite: false
+    };
+
+    session.setAVPlaybackState(playbackState, (err) => {
+      if (err) {
+        console.error(`Failed to set AVPlaybackState. Code: ${err.code}, message: ${err.message}`);
+      } else {
+        console.info(`SetAVPlaybackState successfully`);
+      }
+    });
+
+    session.setAVMetadata(metadata).then(() => {
+      console.info(`SetAVMetadata successfully`);
+    }).catch((err: BusinessError) => {
+      console.error(`Failed to set AVMetadata. Code: ${err.code}, message: ${err.message}`);
+    });
+
+
+    // 激活接口要在元数据、控制命令注册完成之后再执行
+    await session.activate();
+
+    console.info(`session create done : sessionId : ${session.sessionId}`);
+  }
+
+  async startContinuousTask() {
+    await this.createSession();
+
+    let wantAgentInfo: wantAgent.WantAgentInfo = {
+
+      wants: [
+        {
+          bundleName: "com.yuanzi.punchin",
+          abilityName: "com.yuanzi.punchin.MainAbility"
+        }
+      ],
+      // 指定点击通知栏消息后的动作是拉起ability
+      operationType: wantAgent.OperationType.START_ABILITY,
+      // 使用者自定义的一个私有值
+      requestCode: 0,
+      // 点击通知后，动作执行属性
+      wantAgentFlags: [wantAgent.WantAgentFlags.UPDATE_PRESENT_FLAG]
+    };
+
+    // 通过wantAgent模块下getWantAgent方法获取WantAgent对象
+    wantAgent.getWantAgent(wantAgentInfo).then((wantAgentObj: WantAgent) => {
+      backgroundTaskManager.startBackgroundRunning(this.context,
+        backgroundTaskManager.BackgroundMode.AUDIO_PLAYBACK, wantAgentObj).then(() => {
+        console.info(`Succeeded in operationing startBackgroundRunning.`);
+      }).catch((err: BusinessError) => {
+        console.error(`Failed to operation startBackgroundRunning. Code is ${err.code}, message is ${err.message}`);
+      });
+    });
+  }
+
+  stopContinuousTask() {
+    backgroundTaskManager.stopBackgroundRunning(this.context).then(() => {
+      console.info(`Succeeded in operationing stopBackgroundRunning.`);
+    }).catch((err: BusinessError) => {
+      console.error(`Failed to operation stopBackgroundRunning. Code is ${err.code}, message is ${err.message}`);
+    });
+  }
+
+
   aboutToDisappear(): void {
     this.avPlayer = undefined;
     emitter.off(EventCode.PLAY_AUDIO)
+    this.stopContinuousTask();
   }
 
   pauseAudio() {
     this.avPlayer?.stop();
+    // this.stopContinuousTask();
   }
 
   setAVPlayerCallback(avPlayer: media.AVPlayer) {
@@ -126,6 +209,7 @@ export struct AudioPlayer {
       // 为fdSrc赋值触发initialized状态机上报
       this.avPlayer.fdSrc = avFileDescriptor;
 
+      this.startContinuousTask();
       // 为fdSrc赋值触发initialized状态机上报
     } catch (e) {
       console.error(`${JSON.stringify(e)}`)
