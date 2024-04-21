@@ -154,7 +154,7 @@ export struct TargetPage {
       return `已坚持${item.punch_days}天，还剩${distance - item.punch_days}天！`
     } else {
       if (item?.punch_days === 0) {
-        return '自律使人痛苦';
+        return '自律使人进步';
       } else {
         return `已坚持${item.punch_days}天`
       }

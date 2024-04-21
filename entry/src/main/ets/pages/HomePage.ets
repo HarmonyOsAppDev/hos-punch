@@ -279,18 +279,18 @@ export struct HomePage {
         return '打卡完成';
       }
 
+      if (distance - item.punch_days < 1) {
+        return `已坚持${item.punch_days}天`
+      }
+
       return `已坚持${item.punch_days}天，还剩${distance - item.punch_days}天！`
     } else {
       if (item?.punch_days === 0) {
-        return '自律使人痛苦';
+        return '自律使人进步';
       } else {
         return `已坚持${item.punch_days}天`
       }
     }
-  }
-
-  playPunchAudio() {
-
   }
 
 
@@ -442,7 +442,7 @@ export struct HomePage {
           Column() {
             Image($r("app.media.emptylist")).width(100).height(100)
             Text("当天没有打卡任务").fontColor(activeConfig.normal).fontSize(16).margin({top: 5})
-            Text("自律使人痛苦，点击右上角创建打卡吧").fontColor(activeConfig.normal).fontSize(12).margin({top: 5})
+            Text("自律使人进步，点击右上角创建打卡吧").fontColor(activeConfig.normal).fontSize(12).margin({top: 5})
           }.margin({top: 50})
         }
 

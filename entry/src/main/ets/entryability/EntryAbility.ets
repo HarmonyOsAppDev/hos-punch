@@ -14,7 +14,7 @@ export default class EntryAbility extends UIAbility {
     //
     const kvManagerConfig: distributedKVStore.KVManagerConfig = {
       context: context,
-      bundleName: 'com.yuanzi.myapplication'
+      bundleName: 'com.yuanzi.punchin'
     };
 
     try {

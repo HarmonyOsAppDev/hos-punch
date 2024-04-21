@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "/Users/ryderdu/.ohos/config/default_punchin2_hzD-KN3xk4_mU1EV6C6Ut5qHk39sQ6_DfIFx4RpeWHk=.cer",
-          "storePassword": "0000001A87112DAD5C885A4B7D70391A162181B2E7E8357C47C486FEBC79B7BD0DE1D7FB76EE47B5A085",
+          "certpath": "/Users/ryderdu/.ohos/config/config_punchin2_hzD-KN3xk4_mU1EV6C6Ut5qHk39sQ6_DfIFx4RpeWHk=.cer",
+          "storePassword": "0000001B2905A530D3086CFD24D91F2E3212060E5375E3F19433C54E45AF29F0CF5D3652995CF2E02E4CE9",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001AD734410AAB6F883C1C47CA1749EEE1BB964041E34698D591950D24784D174AEB61ADA3860789",
-          "profile": "/Users/ryderdu/.ohos/config/default_punchin2_hzD-KN3xk4_mU1EV6C6Ut5qHk39sQ6_DfIFx4RpeWHk=.p7b",
+          "keyPassword": "0000001B2AEDFEC704079F295A4B199A1F83FB4A3ED5BDBCD4921A91BF93C31614E37D7A7C7910DEECEC6E",
+          "profile": "/Users/ryderdu/.ohos/config/config_punchin2_hzD-KN3xk4_mU1EV6C6Ut5qHk39sQ6_DfIFx4RpeWHk=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "/Users/ryderdu/.ohos/config/default_punchin2_hzD-KN3xk4_mU1EV6C6Ut5qHk39sQ6_DfIFx4RpeWHk=.p12"
+          "storeFile": "/Users/ryderdu/.ohos/config/config_punchin2_hzD-KN3xk4_mU1EV6C6Ut5qHk39sQ6_DfIFx4RpeWHk=.p12"
         }
       }
     ],
