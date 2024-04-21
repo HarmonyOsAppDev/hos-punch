@@ -77,7 +77,7 @@ export const Icon_list = [
   },
   {
     id: "12",
-    url: "app.media.ershouche"
+    url: "app.media.daishouhuo"
   },
   {
     id: "13",
@@ -111,8 +111,4 @@ export const Icon_list = [
     id: "20",
     url: "app.media.kabao"
   },
-  {
-    id: "21",
-    url: "app.media.daishouhuo"
-  }
 ]
