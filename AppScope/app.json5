@@ -1,6 +1,6 @@
 {
   "app": {
-    "bundleName": "com.yuanzi.myapplication",
+    "bundleName": "com.yuanzi.punchin",
     "vendor": "example",
     "versionCode": 1000000,
     "versionName": "1.0.0",
