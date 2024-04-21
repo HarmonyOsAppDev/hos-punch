@@ -1,5 +1,5 @@
-import { activeConfig, AudioEvent, ColorConfig, EventCode, jiTang, punch_event_name } from '../constants'
-import { CycleType, NewTaskType, PersonalPunchInRecord, PunchDaysType, SelectDateType, SettingType } from '../types'
+import { activeConfig, AudioEvent, ColorConfig, EventCode, punch_event_name } from '../constants'
+import { CycleType, NewTaskType, PersonalPunchInRecord, SelectDateType, SettingType } from '../types'
 import { getDaysOfMonthWithFirstDayOfWeek, getYMD } from '../utils/helper'
 import router from '@ohos.router'
 import DatabaseManager from '../services/DatabaseManager'

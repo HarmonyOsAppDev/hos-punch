@@ -236,7 +236,7 @@ export struct TomatoModule {
               }
             })
 
-          Image($r(Icon_list[8].url)).width(60).height(60).margin({ top: 30 })
+          Image($r(Icon_list[8].url)).width(60).height(60).margin({ top: 30, bottom: 30 })
 
           if (this.getTomatoTasks()?.[this.tomatoTaskIndex].type === TomatoTaskType.REST) {
             Text(`正在休息～`).fontSize(16).fontColor(ColorConfig.THEME_ORANGE_COLOR).margin({ top: 2});
