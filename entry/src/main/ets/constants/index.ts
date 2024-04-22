@@ -36,7 +36,8 @@ export const ColorConfig = {
   ERROR_COLOR: "#fe4d4d",
   NORMAL_COLOR: "#1296db",
   BOARD_BG_COLOR: "#f6f8fa",
-  SAVE_BTN_COLOR: "#ff4d4f"
+  SAVE_BTN_COLOR: "#ff4d4f",
+  UNACTIVE_CURRENT_DATE_COLOR: "#a09c9c",
 }
 
 export const timeConfig = [

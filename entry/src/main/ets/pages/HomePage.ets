@@ -1,6 +1,6 @@
 import { activeConfig, AudioEvent, ColorConfig, EventCode, punch_event_name } from '../constants'
 import { CycleType, NewTaskType, PersonalPunchInRecord, SelectDateType, SettingType } from '../types'
-import { getDaysOfMonthWithFirstDayOfWeek, getYMD } from '../utils/helper'
+import { getDaysOfMonthWithFirstDayOfWeek, getYMD, isObjectEqual } from '../utils/helper'
 import router from '@ohos.router'
 import DatabaseManager from '../services/DatabaseManager'
 import systemDateTime from '@ohos.systemDateTime'
@@ -12,6 +12,11 @@ import emitter from '@ohos.events.emitter'
 @Component
 export struct HomePage {
   @State currentDayList: number[] = []
+  private currentDayNow: SelectDateType = {
+    year: new Date().getFullYear(),
+    month: new Date().getMonth() + 1,
+    day: new Date().getDate(),
+  };
   @State currentDate: SelectDateType = {
     year: new Date().getFullYear(),
     month: new Date().getMonth() + 1,
@@ -335,6 +340,25 @@ export struct HomePage {
               Row() {
                 Text(index.toString()).textAlign(TextAlign.Center).fontWeight(600).zIndex(2)
                   .fontColor(this.currentDate.day === Number(index) ? "white" : activeConfig.active)
+
+                // 如果光标移动到其他日期，低亮显示今天所在标尺
+                if (index !== '' && isObjectEqual({m: this.currentDayNow.month, y: this.currentDayNow.year}, {m: this.currentDate.month, y: this.currentDate.year}) && this.currentDayNow.day === Number(index)) {
+                  Column()
+                    .backgroundColor(ColorConfig.UNACTIVE_CURRENT_DATE_COLOR)
+                    .borderRadius(50)
+                    .width("50%")
+                    .height("50%")
+                    .position({ x: "25%", y: "25%" })
+                    .zIndex(1)
+                  Column()
+                    .backgroundColor(ColorConfig.UNACTIVE_CURRENT_DATE_COLOR)
+                    .borderRadius(50)
+                    .width("10%")
+                    .height("10%")
+                    .position({ x: "45%", y: "85%" })
+                    .zIndex(1)
+                }
+
                 if (index !== '' && this.currentDate.day === Number(index)) {
                   Column()
                     .backgroundColor(ColorConfig.THEME_ORANGE_COLOR)
