@@ -13,7 +13,7 @@ import { getEndTimeInit, getYMD, monthChangeStr, weekDayChangeStr } from '../uti
 export struct AddTarget {
   @State formData: NewTaskType = {
     id: "0",
-    title: "默认打卡主题",
+    title: "填写目标名称",
     icon: Icon_list[0].url,
     cycle: [1, 2, 3, 4, 5, 6, 7],
     cycleType: CycleType.WEEK,
