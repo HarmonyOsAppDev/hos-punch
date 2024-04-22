@@ -245,7 +245,7 @@ export struct AudioPlayer {
 
             Row() {
 
-              Image($r([CountStatusType.UN_START, CountStatusType.IN_PAUSE ].includes(this.currentPlayStatus) ? 'app.media.playBtn' : "app.media.pause")).width(25).height(25).opacity(0.6).onClick(() => {
+              Image($r([CountStatusType.UN_START, CountStatusType.IN_PAUSE ].includes(this.currentPlayStatus) ? 'app.media.playBtn' : "app.media.pause")).width(25).height(25).opacity(0.8).onClick(() => {
                 if ([CountStatusType.UN_START, CountStatusType.IN_PAUSE].includes(this.currentPlayStatus)) {
                   this.playAudio(this.musicRepo[this.currentMusicIndex]?.src);
                 } else {
@@ -254,7 +254,7 @@ export struct AudioPlayer {
               })
 
               Blank().width(15)
-              Image($r('app.media.chooseSong')).width(25).height(25).opacity(0.6).onClick(() => {
+              Image($r('app.media.chooseSong')).width(25).height(25).opacity(0.8).onClick(() => {
                 TextPickerDialog.show({
                   range: this.musicRepo.map(item => item.str),
                   selected: this.currentMusicIndex,
