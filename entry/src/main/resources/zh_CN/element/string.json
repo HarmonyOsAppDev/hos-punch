@@ -1,6 +1,34 @@
 {
   "string": [
     {
+      "name": "welcome_welcome",
+      "value": "欢迎使用"
+    },
+    {
+      "name": "welcome_appname",
+      "value": "记录倒数日"
+    },
+    {
+      "name": "welcome_appdes",
+      "value": "生日纪念日备忘神器"
+    },
+    {
+      "name": "welcome_terms_detail",
+      "value": "本应用尊重和保护所有用户的个人隐私权.本应用不联网，不获取个人和设备隐私信息, 且依照隐私条款使用和披露您的个人信息。如果你不同意隐私条款，请退出本应用。"
+    },
+    {
+      "name": "welcome_privacy_policy",
+      "value": "隐私协议"
+    },
+    {
+      "name": "welcome_privacy_start",
+      "value": "同意并开始使用"
+    },
+    {
+      "name": "welcome_privacy_refuse",
+      "value": "退出应用"
+    },
+    {
       "name": "module_desc",
       "value": "模块描述"
     },
@@ -10,7 +38,7 @@
     },
     {
       "name": "EntryAbility_label",
-      "value": "超级打卡"
+      "value": "坚持打卡"
     }
   ]
 }

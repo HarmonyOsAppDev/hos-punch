@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "/Users/ryderdu/.ohos/config/default_punchin2_hzD-KN3xk4_mU1EV6C6Ut5qHk39sQ6_DfIFx4RpeWHk=.cer",
-          "storePassword": "0000001B46588654A966588270568FD28BE3F9F3F7C56527E0D9BBFD772039F2F870D3DB7ECC53F22BABDA",
-          "keyAlias": "debugKey",
-          "keyPassword": "0000001B050DEDE552D0AC6CD1AED1C3C47FFED1734AA1E4CC0CB0643B4308EF3BF0774084993C68080319",
-          "profile": "/Users/ryderdu/.ohos/config/default_punchin2_hzD-KN3xk4_mU1EV6C6Ut5qHk39sQ6_DfIFx4RpeWHk=.p7b",
+          "storePassword": "0000001C318F75C38148F5593F8F95BA56C3FBEF3099A61D64C1EF06F0F08DE301AC7227C6279E37E6FECB11",
+          "certpath": "/Users/jeffwu/Documents/HAP_Sign/app_publish.cer",
+          "keyAlias": "Yuanzi_Pub_Key",
+          "keyPassword": "0000001C380275408BA8E6AA86098F2E90BB6BF3B5D13E53F0523353895854417441D565A9D6FF31246AEFF3",
+          "profile": "/Users/jeffwu/Downloads/release_profileRelease.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "/Users/ryderdu/.ohos/config/default_punchin2_hzD-KN3xk4_mU1EV6C6Ut5qHk39sQ6_DfIFx4RpeWHk=.p12"
+          "storeFile": "/Users/jeffwu/Documents/HAP_Sign/key_pub.p12"
         }
       }
     ],

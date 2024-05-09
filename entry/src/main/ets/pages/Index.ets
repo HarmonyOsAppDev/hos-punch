@@ -5,12 +5,17 @@ import { FocusPage } from './FocusPage';
 import { HomePage } from './HomePage';
 import { SettingPage } from './SettingPage';
 import { TargetPage } from './TargetPage';
+import { router } from '@kit.ArkUI';
+
+PersistentStorage.persistProp('isFirst', -1);
 
 @Entry
 @Component
 struct Index {
   private tabsController : TabsController = new TabsController()
   @State currentIndex: number = TAB_MENU.INDEX;
+  // Get current theme from storage
+  @StorageLink('isFirst') isFirst: number | string = -1;
 
   @Builder TabBuilder(targetIndex: TAB_MENU) {
     Column() {
@@ -19,6 +24,22 @@ struct Index {
         this.tabsController.changeIndex(this.currentIndex);
       })
       Text(menu_index[targetIndex].name).fontSize(12).margin({top: 2}).fontColor(this.currentIndex === targetIndex ? BottomText.activeColor : BottomText.textColor)
+    }
+  }
+
+  aboutToAppear(): void {
+    if(this.isFirst == -1) {
+      router.replaceUrl({
+        url: 'pages/Welcome' // 目标url
+      }, router.RouterMode.Standard, (err) => {
+        if (err) {
+          console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
+          return;
+        }
+        console.info('Invoke pushUrl succeeded.');
+      });
+
+      return;
     }
   }
 

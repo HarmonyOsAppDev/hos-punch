@@ -1,6 +1,34 @@
 {
   "string": [
     {
+      "name": "welcome_welcome",
+      "value": "Welcome"
+    },
+    {
+      "name": "welcome_appname",
+      "value": "Count Day"
+    },
+    {
+      "name": "welcome_appdes",
+      "value": "Anniversary and Birthday Reminder Tool"
+    },
+    {
+      "name": "welcome_terms_detail",
+      "value": "This app respects and protects the privacy of all its users. The app does not connect to the internet, nor does it access personal and device privacy information. The app will use and disclose your personal information in accordance with privacy regulations. If you do not agree with the privacy terms, please exit this application. Please refer to the following: "
+    },
+    {
+      "name": "welcome_privacy_policy",
+      "value": "Privacy Policy"
+    },
+    {
+      "name": "welcome_privacy_start",
+      "value": "Agree and Start"
+    },
+    {
+      "name": "welcome_privacy_refuse",
+      "value": "Cancel"
+    },
+    {
       "name": "module_desc",
       "value": "module description"
     },

@@ -20,7 +20,7 @@ struct Advice {
           Text("建议反馈").fontSize(18).fontColor(activeConfig.active).fontWeight(600)
         }.alignItems(VerticalAlign.Center)
       }.width("100%").justifyContent(FlexAlign.SpaceBetween)
-      Web({ src: "https://b3wwgxofbm.feishu.cn/share/base/form/shrcnUrmvwDwg8pKOBJ2Mf6mjSe", controller: this.webviewController }).darkMode(WebDarkMode.Off)
+      Web({ src: "https://yuanzi-inno.feishu.cn/share/base/form/shrcnTFPxA86CGXIzqcYxZGdi5b", controller: this.webviewController }).darkMode(WebDarkMode.Off)
     }
   }
 }

@@ -1,6 +1,7 @@
 {
   "src": [
     "pages/Index",
+    "pages/Welcome",
     "pages/AddTarget",
     "pages/Privacy",
     "pages/Advice",
