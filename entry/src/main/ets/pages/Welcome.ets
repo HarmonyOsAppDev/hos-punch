@@ -80,7 +80,7 @@ struct Welcome {
   private StartApp(): void {
     this.isFirst = 1;
 
-    router.pushUrl({
+    router.replaceUrl({
       url: 'pages/Index' // 目标url
     }, router.RouterMode.Standard, (err) => {
       if (err) {
