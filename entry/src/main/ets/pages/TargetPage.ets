@@ -18,19 +18,19 @@ export struct TargetPage {
     Flex({ direction: FlexDirection.Column }) {
       Row() {
         Image($r("app.media.edit")).width(18).height(18)
-        Text('编辑').fontSize(16).fontColor(ColorConfig.NORMAL_COLOR).margin({left: 5})
-      }.alignItems(VerticalAlign.Center).padding({ left: 12, top: 12, bottom: 10 }).justifyContent(FlexAlign.Start).onClick(() => {
+        Text('编辑').fontSize(16).fontColor(ColorConfig.NORMAL_COLOR).margin({left: 6})
+      }.alignItems(VerticalAlign.Center).padding({ left: 14, top: 18, bottom: 16 }).justifyContent(FlexAlign.Start).onClick(() => {
         this.goToTargetDataView();
       })
 
       Row() {
         Image($r("app.media.deleteAction")).width(18).height(18)
-        Text('删除').fontSize(16).fontColor(ColorConfig.ERROR_COLOR).margin({left: 5})
-      }.alignItems(VerticalAlign.Center).padding({ left: 12, top: 10, bottom: 12 }).justifyContent(FlexAlign.Start).onClick(() => {
+        Text('删除').fontSize(16).fontColor(ColorConfig.ERROR_COLOR).margin({left: 6})
+      }.alignItems(VerticalAlign.Center).padding({ left: 14, top: 18, bottom: 16 }).justifyContent(FlexAlign.Start).onClick(() => {
         this.openDeleteModal();
       })
     }.borderRadius(5)
-    .width(105)
+    .width(125)
   }
 
   isSelected(index: number) {
@@ -110,6 +110,9 @@ export struct TargetPage {
 
   aboutToAppear(): void {
     this.changeTabWithData(SelectEnum.PROCESS)
+    emitter.on({eventId: EventCode.TARGET_ADDED}, () => {
+      this.changeTabWithData(this.selectIndex);
+    })
   }
 
   handleData(list: NewTaskType[]): TargetPageType {

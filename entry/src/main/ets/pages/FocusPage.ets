@@ -38,7 +38,7 @@ export struct FocusPage {
         }
 
         Column() {}.width(25)
-      }.justifyContent(FlexAlign.SpaceBetween).width("100%").padding({left: 15, right: 15, top: 5, bottom: 10})
+      }.justifyContent(FlexAlign.SpaceBetween).width("100%").padding({left: 15, right: 15, top: 15, bottom: 10})
 
 
 

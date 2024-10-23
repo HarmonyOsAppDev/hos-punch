@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "storePassword": "0000001C318F75C38148F5593F8F95BA56C3FBEF3099A61D64C1EF06F0F08DE301AC7227C6279E37E6FECB11",
-          "certpath": "/Users/jeffwu/Documents/HAP_Sign/app_publish.cer",
+          "storePassword": "0000001CA82FF4DFA0F4029C4F980685A6E1F96725163E7247DD1F1CCA7BE0EB9F6DD00CD65E8718C4D016E5",
+          "certpath": "/Users/wujianfeng/Documents/HAP_Sign/app_publish.cer",
           "keyAlias": "Yuanzi_Pub_Key",
-          "keyPassword": "0000001C380275408BA8E6AA86098F2E90BB6BF3B5D13E53F0523353895854417441D565A9D6FF31246AEFF3",
-          "profile": "/Users/jeffwu/Downloads/release_profileRelease.p7b",
+          "keyPassword": "0000001CB741FBA3CFD9F975EF2B8A1D8132E9B7366A80EC4F71A588141E69170084B361BCE6A380A1F8C23C",
+          "profile": "/Users/wujianfeng/Documents/hos-Punch/release_profileRelease.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "/Users/jeffwu/Documents/HAP_Sign/key_pub.p12"
+          "storeFile": "/Users/wujianfeng/Documents/HAP_Sign/key_pub.p12"
         }
       }
     ],
@@ -19,9 +19,8 @@
       {
         "name": "default",
         "signingConfig": "default",
-        "compileSdkVersion": "4.1.0(11)",
-        "compatibleSdkVersion": "4.1.0(11)",
-        "runtimeOS": "HarmonyOS",
+        "compatibleSdkVersion": "5.0.0(12)",
+        "runtimeOS": "HarmonyOS"
       }
     ],
     "buildModeSet": [

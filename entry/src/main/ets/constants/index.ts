@@ -115,6 +115,10 @@ export const period_types_map =  ['日目标', '周目标', '月目标', '年目
 export const music_config = [
   { str: "柔和海浪", id: 1, src: "ld.mp3" },
   { str: "海滩波浪", id: 2, src: "ht.mp3" },
+  { str: "放松学习", id: 3, src: "lofi_study.mp3" },
+  { str: "欧陆小城", id: 4, src: "once_in_paris.mp3" },
+  { str: "无封笔记", id: 5, src: "coverless_book.mp3" },
+  { str: "意境吉他", id: 6, src: "ambient_guitar.mp3" },
 ];
 
 export const remindAudio = "ding.mp3"
@@ -146,7 +150,8 @@ export enum EventCode {
   "TOMATO_SETTING_DATA" = 3,
   "REFRESH_RECORD" = 4,
   "PLAY_AUDIO" = 5,
-  "PLAY_REMIND_AUDIO" = 6
+  "PLAY_REMIND_AUDIO" = 6,
+  "TARGET_ADDED" = 7
 }
 
 

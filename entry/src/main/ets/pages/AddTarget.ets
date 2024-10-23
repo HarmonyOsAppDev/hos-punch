@@ -1,19 +1,20 @@
 import router from '@ohos.router'
 import { showDialog, TypeDialogManager } from '../components/Dialog';
-import { activeConfig, ColorConfig, punch_event_name } from '../constants';
+import { activeConfig, ColorConfig, EventCode, punch_event_name } from '../constants';
 import DatabaseManager from '../services/DatabaseManager';
 import { Icon_list } from '../statics';
 import { CycleType, IconItemType, NewTaskType, TargetCycleSelectType, TaskStatus,
   CycleRouterType } from '../types';
 import { generateNanoId } from '../utils/generate';
 import { getEndTimeInit, getYMD, monthChangeStr, weekDayChangeStr } from '../utils/helper';
+import emitter from '@ohos.events.emitter'
 
 @Entry
 @Component
 export struct AddTarget {
   @State formData: NewTaskType = {
     id: "0",
-    title: "填写目标名称",
+    title: "",
     icon: Icon_list[0].url,
     cycle: [1, 2, 3, 4, 5, 6, 7],
     cycleType: CycleType.WEEK,
@@ -102,29 +103,33 @@ export struct AddTarget {
 
     DatabaseManager.set(punch_event_name.PUNCH_IN_ALL_DATA, JSON.stringify(insertData));
 
-    router.replaceUrl({
-      url: "pages/Index",
-    });
+    emitter.emit({eventId: EventCode.TARGET_ADDED});
+
+    router.back();
+
+    // router.replaceUrl({
+    //   url: "pages/Index",
+    // });
   }
 
   build() {
     Column() {
       Row() {
-      Column() {
-        Image($r('app.media.back')).width(30).height(30).onClick(() => {
-          this.routerBack();
-        })
-      }
+        Column() {
+          Image($r('app.media.back')).width(30).height(30).onClick(() => {
+            this.routerBack();
+          })
+        }
 
-      Row() {
-        Text("新的打卡目标").fontSize(20).fontWeight(500)
-      }
+        Row() {
+          Text("新的打卡目标").fontSize(20).fontWeight(500)
+        }
 
         Text("保存").fontSize(16).fontWeight(400).onClick(() => {
           this.submitResult();
         })
 
-    }.justifyContent(FlexAlign.SpaceBetween).width("100%").padding({left: 15, right: 15, top: 5}).margin({bottom: 15})
+    }.justifyContent(FlexAlign.SpaceBetween).width("100%").padding({left: 15, right: 15, top: 15}).margin({bottom: 15})
 
 
       Scroll(this.scroller) {
@@ -139,13 +144,6 @@ export struct AddTarget {
                 .fontSize(18)
                 .maxLines(1)
                 .width("66%")
-                .onClick(() => {
-                  this.createTypeDialog(
-                    this.formData.title,
-                    "打卡目标",
-                    "title"
-                  );
-                })
                 .fontColor("#777")
                 .textAlign(TextAlign.End)
                 .margin({right: 5})
@@ -160,6 +158,13 @@ export struct AddTarget {
           .margin({ left: "2.5%", right: "2.5%" })
           .borderRadius(30)
           .margin({ top: 10 })
+          .onClick(() => {
+            this.createTypeDialog(
+              this.formData.title,
+              "打卡目标",
+              "title"
+            );
+          })
 
 
           Row() {
@@ -263,9 +268,6 @@ export struct AddTarget {
               .fontSize(18)
               .maxLines(1)
               .width("66%")
-              .onClick(() => {
-                this.goToSelectCyclePage();
-              })
               .fontColor(activeConfig.normal)
               .textAlign(TextAlign.End)
               .padding({ right: 8 })
@@ -280,6 +282,9 @@ export struct AddTarget {
         .margin({ left: "2.5%", right: "2.5%" })
         .borderRadius(30)
         .margin({ top: 10 })
+        .onClick(() => {
+          this.goToSelectCyclePage();
+        })
 
 
           Row() {
@@ -292,14 +297,6 @@ export struct AddTarget {
                 .fontSize(18)
                 .maxLines(1)
                 .width("50%")
-                .onClick(() => {
-                  this.createTypeDialog(
-                    this.formData.punch_count,
-                    "目标打卡数量",
-                    "punch_count",
-                    InputType.Number
-                  );
-                })
                 .fontColor(activeConfig.normal)
                 .textAlign(TextAlign.End)
                 .padding({ right: 10 })
@@ -313,6 +310,14 @@ export struct AddTarget {
           .margin({ left: "2.5%", right: "2.5%" })
           .borderRadius(30)
           .margin({ top: 10 })
+          .onClick(() => {
+            this.createTypeDialog(
+              this.formData.punch_count,
+              "目标打卡数量",
+              "punch_count",
+              InputType.Number
+            );
+          })
 
           // Row() {
           //   Row() {
@@ -363,28 +368,36 @@ export struct AddTarget {
           }
 
           Row() {
-            Text(getYMD(this.formData.start_time).dateStr).fontColor("#328dff").fontSize(16).onClick(() => {
-              DatePickerDialog.show({
-                start: new Date("2000-1-1"),
-                end: new Date("2100-12-31"),
-                lunar: false,
-                selected: this.selectedDate,
-                onAccept: (value: DatePickerResult) => {
-                  // 通过Date的setFullYear方法设置按下确定按钮时的日期，这样当弹窗再次弹出时显示选中的是上一次确定的日期
-                  if (value) {
-                    const year = value.year;
-                    const month =(value?.month || 0) + 1;
-                    const day = value?.day;
-                    this.formData.start_time = new Date(`${year}-${month}-${day}}`).getTime();
-                    // this.dateStartChange();
-                  }
-                  this.selectedDate.setFullYear(value.year, value.month, value.day)
-                },
-              })
-            }).margin({right: 5})
+            Text(getYMD(this.formData.start_time).dateStr).fontColor("#328dff").fontSize(16).margin({right: 5})
             Image($r("app.media.right_arrow")).width(15).height(15)
           }
-        }.justifyContent(FlexAlign.SpaceBetween).padding({ bottom: 20, left: 15, right: 15, top: 20 }).width("95%").backgroundColor(ColorConfig.BOARD_BG_COLOR).margin({left: "2.5%", right: "2.5%"}).borderRadius(30).margin({top: 10})
+        }
+        .onClick(() => {
+          DatePickerDialog.show({
+            start: new Date("2000-1-1"),
+            end: new Date("2100-12-31"),
+            lunar: false,
+            selected: this.selectedDate,
+            onAccept: (value: DatePickerResult) => {
+              // 通过Date的setFullYear方法设置按下确定按钮时的日期，这样当弹窗再次弹出时显示选中的是上一次确定的日期
+              if (value) {
+                const year = value.year;
+                const month =(value?.month || 0) + 1;
+                const day = value?.day;
+                this.formData.start_time = new Date(`${year}-${month}-${day}}`).getTime();
+                // this.dateStartChange();
+              }
+              this.selectedDate.setFullYear(value.year, value.month, value.day)
+            },
+          })
+        })
+        .justifyContent(FlexAlign.SpaceBetween)
+        .padding({ bottom: 20, left: 15, right: 15, top: 20 })
+        .width("95%")
+        .backgroundColor(ColorConfig.BOARD_BG_COLOR)
+        .margin({left: "2.5%", right: "2.5%"})
+        .borderRadius(30)
+        .margin({top: 10})
 
 
         Row() {
@@ -412,8 +425,6 @@ export struct AddTarget {
         .borderRadius(30)
         .margin({ top: 10 })
 
-
-
         if (this.needEndTime) {
           Row() {
             Row() {
@@ -421,28 +432,36 @@ export struct AddTarget {
             }
 
             Row() {
-              Text(getYMD(this.formData.end_time).dateStr).fontColor("#328dff").fontSize(16).onClick(() => {
-                DatePickerDialog.show({
-                  start: new Date("2000-1-1"),
-                  end: new Date("2100-12-31"),
-                  lunar: false,
-                  selected: new Date(this.formData.end_time),
-                  onAccept: (value: DatePickerResult) => {
-                    // 通过Date的setFullYear方法设置按下确定按钮时的日期，这样当弹窗再次弹出时显示选中的是上一次确定的日期
-                    if (value) {
-                      const year = value.year;
-                      const month =(value?.month || 0) + 1;
-                      const day = value?.day;
-                      this.formData.end_time = new Date(`${year}-${month}-${day}}`).getTime();
-                      // this.dateStartChange();
-                    }
-                    new Date(this.formData.end_time).setFullYear(value.year, value.month, value.day)
-                  },
-                })
-              }).margin({right: 5})
+              Text(getYMD(this.formData.end_time).dateStr).fontColor("#328dff").fontSize(16).margin({right: 5})
               Image($r("app.media.right_arrow")).width(15).height(15)
             }
-          }.justifyContent(FlexAlign.SpaceBetween).padding({ bottom: 20, left: 15, right: 15, top: 20 }).width("95%").backgroundColor(ColorConfig.BOARD_BG_COLOR).margin({left: "2.5%", right: "2.5%"}).borderRadius(30).margin({top: 10})
+          }
+          .justifyContent(FlexAlign.SpaceBetween)
+          .padding({ bottom: 20, left: 15, right: 15, top: 20 })
+          .width("95%")
+          .backgroundColor(ColorConfig.BOARD_BG_COLOR)
+          .margin({left: "2.5%", right: "2.5%"})
+          .borderRadius(30)
+          .margin({top: 10})
+          .onClick(() => {
+            DatePickerDialog.show({
+              start: new Date("2000-1-1"),
+              end: new Date("2100-12-31"),
+              lunar: false,
+              selected: new Date(this.formData.end_time),
+              onAccept: (value: DatePickerResult) => {
+                // 通过Date的setFullYear方法设置按下确定按钮时的日期，这样当弹窗再次弹出时显示选中的是上一次确定的日期
+                if (value) {
+                  const year = value.year;
+                  const month =(value?.month || 0) + 1;
+                  const day = value?.day;
+                  this.formData.end_time = new Date(`${year}-${month}-${day}}`).getTime();
+                  // this.dateStartChange();
+                }
+                new Date(this.formData.end_time).setFullYear(value.year, value.month, value.day)
+              },
+            })
+          })
 
 
         }
@@ -454,7 +473,7 @@ export struct AddTarget {
               Image($r("app.media.send")).width(20).height(20)
               Text("创建").fontSize(18).fontColor("white").margin({ left: 5 })
             }.alignItems(VerticalAlign.Center)
-          }.height(50).width("90%").onClick(() => {
+          }.backgroundColor(ColorConfig.THEME_ORANGE_COLOR).height(50).width("90%").onClick(() => {
             this.submitResult();
           })
         }.margin({ top: 20 })

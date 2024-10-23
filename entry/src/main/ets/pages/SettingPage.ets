@@ -38,7 +38,7 @@ export struct SettingPage {
         }
 
         Column() {}.width(25)
-      }.justifyContent(FlexAlign.SpaceBetween).width("100%").padding({left: 15, right: 15, top: 5})
+      }.justifyContent(FlexAlign.SpaceBetween).width("100%").padding({left: 15, right: 15, top: 15})
 
 
       Row() {

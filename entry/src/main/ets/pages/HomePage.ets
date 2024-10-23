@@ -29,12 +29,21 @@ export struct HomePage {
   private scrollerForList: Scroller = new Scroller()
   private DialogInstance: CustomDialogController | undefined = undefined;
 
+
+  onBackPress(): void {
+    this.initData();
+  }
+
   async aboutToAppear() {
     this.initData();
     this.getPunchAuidoSetting();
+    // 当 AddTarget 添加目标后更新数据
+    emitter.on({eventId: EventCode.TARGET_ADDED}, () => {
+      this.initData();
+    });
     emitter.on({eventId: EventCode.DELETE_ACTION}, () => {
       this.initData();
-    })
+    });
   }
 
   async getPunchAuidoSetting() {
@@ -313,7 +322,7 @@ export struct HomePage {
 
         Column() {}
 
-      }.justifyContent(FlexAlign.SpaceBetween).width("100%").padding({left: 15, right: 15, top: 5})
+      }.justifyContent(FlexAlign.SpaceBetween).width("100%").padding({left: 15, right: 15, top: 15})
 
 
       Row() {
@@ -469,16 +478,23 @@ export struct HomePage {
             Text("自律使人进步，点击右上角创建打卡吧").fontColor(activeConfig.normal).fontSize(12).margin({top: 5})
           }.margin({top: 50})
         }
-
       }
+
       Row() {
         Image($r('app.media.plusWhite')).width(55).height(55).opacity(0.9).padding({ left: 10, right: 10, top: 10, bottom: 10 })
-      }.onClick(() => {
+      }
+      .onClick(() => {
         this.toAddTarget();
-      }).position({x: "78%", y: "85%"}).backgroundColor(ColorConfig.THEME_ORANGE_COLOR).borderRadius(50).shadow({
+      })
+      .position({x: "43%", y: "89%"})
+      .backgroundColor(ColorConfig.THEME_ORANGE_COLOR)
+      .borderRadius(50)
+      .shadow({
         radius: 15,
         color: "#d4d4d4"
       })
-    }.width("100%").height("100%")
+    }
+    .width("100%")
+    .height("100%")
   }
 }
